@@ -1,7 +1,7 @@
 const env = {
-  database: 'freedb_dhuwitku',
-  username: 'freedb_dhuwitku',
-  password: '&5sjNnSrS@NyvwE',
+  database: 'freedb_manara_dev',
+  username: 'freedb_manara_dev',
+  password: 'Kgvee*!57mn*BpM',
   host: 'sql.freedb.tech',
 };
 

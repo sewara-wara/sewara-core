@@ -3,73 +3,100 @@ const authConfig = require("../config/authConfig.js");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const statusCode = require('../config/statusCode.js');
-const baseError = require("../middleware/error.js");
+const error = require("../middleware/error.js");
+const nodemailer = require('nodemailer');
+const saltRounds = 10;
 
-exports.login = (request, response) => {
-    const email = request.body.email
-    const password = request.body.password
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'manarakubah@gmail.com',
+    pass: '1Manara22_'
+  }
+});
 
-    let query = "SELECT * FROM user_apps WHERE email = ?"
-    db.pool.query(query, [email], (error, results) => {
-        baseError.handleError(error, response)
+exports.register = async (req, res) => {
+    const { username, email, password } = req.body;
 
-        if (results.length == 0) {
-            return response.json({
-                code: statusCode.empty_data,
-                message: "Akun tidak ditemukan"
-            });
+    try {
+        if (!username || !email || !password) {
+            return error.error(400, 'Semua field wajib diisi');
+        }
+        const [existingUser] = await db.query('SELECT id FROM user WHERE email = ?', [email]);
+        if (existingUser.length > 0) {
+            return error.error(400, 'Email sudah terdaftar');
         }
 
-        let passwordIsValid = bcrypt.compareSync(
-            password,
-            results[0].password
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+        const [result] = await db.query(
+        'INSERT INTO user (username, email, password, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())',
+            [username, email, hashedPassword]
         );
-        if (passwordIsValid) {
-            let token = jwt.sign({ id: results[0].id }, authConfig.secret, {
-                expiresIn: 31536000 // 1 year
-            });
-            response.json({
-                code: statusCode.success,
-                message: "Login Berhasil",
-                data: results[0],
-                session: token
-            });
-        } else {
-            response.json({
-                code: statusCode.wrong_password,
-                message: "Kata sandi salah"
-            });
-        }
-    })
-}
 
-exports.register = (request, response) => {
-    const name = request.body.name
-    const email = request.body.email
-    const password = request.body.password
+        const userId = result.insertId;
 
-    let querySelect = "SELECT * FROM user_apps WHERE email = ?"
-    db.pool.query(querySelect, [email], (error, results) => {
-        baseError.handleError(error, response)
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const otpExpiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 menit
 
-        if (results.length != 0) {
-            return response.json({
-                code: statusCode.already_exists,
-                message: "Email sudah pernah digunakan"
-            });
-        }
-        
-        let bcrypPassword = bcrypt.hashSync(password, 8)
+        await db.query(
+        'INSERT INTO user_otp (user_id, otp, otp_expires_at) VALUES (?, ?, ?)',
+            [userId, otp, otpExpiresAt]
+        );
 
-        let queryInsert = "INSERT INTO user_apps (name, email, password) VALUES (?, ?, ?)"
-        db.pool.query(queryInsert, [name, email, bcrypPassword], (error, results) => {
-            baseError.handleError(error, response)
-            
-            response.json({
-                code: statusCode.success,
-                message: "Pendaftaran Berhasil",
-                data: results
-            });
-        })
-    })
-}
+        const mailOptions = {
+            from: 'manarakubah@gmail.com',
+            to: email,
+            subject: 'Verifikasi Email Anda',
+            text: `Kode OTP Anda adalah: ${otp}. Kode ini akan kedaluwarsa dalam 15 menit.`
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        res.status(201).json({
+            code: statusCode.success,
+            message: 'Registrasi berhasil. Silakan periksa email Anda untuk verifikasi.',
+            userId: userId
+        });
+    } catch (error) {
+        error.error(error);
+    }
+};
+
+// exports.login = (request, response) => {
+//     const email = request.body.email
+//     const password = request.body.password
+
+//     let query = "SELECT * FROM users WHERE email = ?"
+//     db.pool.query(query, [email], (error, results) => {
+//         baseError.handleError(error, response)
+
+//         if (results.length == 0) {
+//             return response.json({
+//                 code: statusCode.empty_data,
+//                 message: "Akun tidak ditemukan"
+//             });
+//         }
+
+//         let passwordIsValid = bcrypt.compareSync(
+//             password,
+//             results[0].password
+//         );
+//         if (passwordIsValid) {
+//             let token = jwt.sign({ id: results[0].id }, authConfig.secret, {
+//                 expiresIn: 31536000 // 1 year
+//             });
+//             response.json({
+//                 code: statusCode.success,
+//                 message: "Login Berhasil",
+//                 data: results[0],
+//                 session: token
+//             });
+//         } else {
+//             response.json({
+//                 code: statusCode.wrong_password,
+//                 message: "Kata sandi salah"
+//             });
+//         }
+//     })
+// }
