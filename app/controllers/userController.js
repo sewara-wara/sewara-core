@@ -1,19 +1,19 @@
 const db = require('../config/dbConfig.js');
 const bcrypt = require("bcryptjs");
 const statusCode = require('../config/statusCode.js');
-const baseError = require("../middleware/error.js");
+const errorHandler = require("../middleware/error.js");
 
 exports.getUsers = async (req, res) => {
     try {
         const [users] = await db.query('SELECT * FROM user');
 
-        res.status(201).json({
+        res.status(statusCode.success).json({
             code: statusCode.success,
             message: 'Mengambil data user berhasil.',
             data: users
         });
     } catch (error) {
-        error.error(error);
+        errorHandler.error(error);
     }
 }
 

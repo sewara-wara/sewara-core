@@ -3,7 +3,7 @@ const authConfig = require("../config/authConfig.js");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const statusCode = require('../config/statusCode.js');
-const error = require("../middleware/error.js");
+const errorHandler = require("../middleware/error.js");
 const nodemailer = require('nodemailer');
 const saltRounds = 10;
 
@@ -20,17 +20,16 @@ exports.register = async (req, res) => {
 
     try {
         if (!username || !email || !password) {
-            return error.error(400, 'Semua field wajib diisi');
+            return errorHandler.error(400, 'Semua field wajib diisi');
         }
         const [existingUser] = await db.query('SELECT id FROM user WHERE email = ?', [email]);
         if (existingUser.length > 0) {
-            return error.error(400, 'Email sudah terdaftar');
+            return errorHandler.error(400, 'Email sudah terdaftar');
         }
 
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-        const [result] = await db.query(
-        'INSERT INTO user (username, email, password, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())',
+        const [result] = await db.query('INSERT INTO user (username, email, password, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())',
             [username, email, hashedPassword]
         );
 
@@ -39,8 +38,7 @@ exports.register = async (req, res) => {
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         const otpExpiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 menit
 
-        await db.query(
-        'INSERT INTO user_otp (user_id, otp, otp_expires_at) VALUES (?, ?, ?)',
+        await db.query('INSERT INTO user_otp (user_id, otp, otp_expires_at) VALUES (?, ?, ?)',
             [userId, otp, otpExpiresAt]
         );
 
@@ -53,13 +51,13 @@ exports.register = async (req, res) => {
 
         await transporter.sendMail(mailOptions);
 
-        res.status(201).json({
+        res.status(statusCode.success).json({
             code: statusCode.success,
             message: 'Registrasi berhasil. Silakan periksa email Anda untuk verifikasi.',
             userId: userId
         });
     } catch (error) {
-        error.error(error);
+        errorHandler.error(error);
     }
 };
 
