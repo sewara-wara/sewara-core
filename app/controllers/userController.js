@@ -7,7 +7,7 @@ exports.getUsers = async (req, res) => {
     try {
         const [users] = await db.pool.query('SELECT * FROM user');
 
-        res.status(statusCode.success).json({
+        res.json({
             code: statusCode.success,
             message: 'Mengambil data user berhasil.',
             data: users
