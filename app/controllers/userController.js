@@ -5,7 +5,7 @@ const errorHandler = require("../middleware/error.js");
 
 exports.getUsers = async (req, res) => {
     try {
-        const users = await db.pool.query('SELECT * FROM user');
+        const users = await db.query('SELECT * FROM user');
 
         res.json({
             code: statusCode.success,
