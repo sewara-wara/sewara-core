@@ -8,16 +8,14 @@ exports.error = (error, response) => {
             message: error.message,
             error: error
         });
+    } else {
+        const error = new Error(message);
+        error.statusCode = statusCode || 500;
+        console.error(error);
+        return response.json({
+            code: code,
+            message: message || 'Internal Server Error',
+            error: error
+        });
     }
-}
-
-exports.error = (statusCode, message, response) => {
-    const error = new Error(message);
-    error.statusCode = statusCode || 500;
-    console.error(error);
-    return response.json({
-        code: code,
-        message: message || 'Internal Server Error',
-        error: error
-    });
 }
