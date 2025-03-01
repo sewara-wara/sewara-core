@@ -3,7 +3,7 @@ const authConfig = require("../config/authConfig.js");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const statusCode = require('../config/statusCode.js');
-const errorHandler = require("../middleware/error.js");
+const errorResponse = require("../helpers/errorResponse.js");
 const nodemailer = require('nodemailer');
 const saltRounds = 10;
 
@@ -15,49 +15,48 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-exports.register = async (req, res) => {
+exports.register = async (req, res, next) => {
     const { username, email, password } = req.body;
 
     try {
-        if (!username || !email || !password) {
-            return errorHandler.error(400, 'Semua field wajib diisi');
-        }
-        const [existingUser] = await db.query('SELECT id FROM user WHERE email = ?', [email]);
-        if (existingUser.length > 0) {
-            return errorHandler.error(400, 'Email sudah terdaftar');
-        }
+      if (!username || !email || !password) {
+        return next(errorResponse('Semua field wajib diisi', statusCode.bad_request));
+      }
+  
+      const [existingUser] = await db.query('SELECT id FROM user WHERE email = ?', [email]);
+      if (existingUser.length > 0) {
+        return next(errorResponse('Email sudah terdaftar', statusCode.already_exists));
+      }
 
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-        const [result] = await db.query('INSERT INTO user (username, email, password, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())',
-            [username, email, hashedPassword]
-        );
-
-        const userId = result.insertId;
-
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        const otpExpiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 menit
-
-        await db.query('INSERT INTO user_otp (user_id, otp, otp_expires_at) VALUES (?, ?, ?)',
-            [userId, otp, otpExpiresAt]
-        );
-
-        const mailOptions = {
-            from: 'manarakubah@gmail.com',
-            to: email,
-            subject: 'Verifikasi Email Anda',
-            text: `Kode OTP Anda adalah: ${otp}. Kode ini akan kedaluwarsa dalam 15 menit.`
-        };
-
-        await transporter.sendMail(mailOptions);
-
-        res.status(statusCode.success).json({
-            code: statusCode.success,
-            message: 'Registrasi berhasil. Silakan periksa email Anda untuk verifikasi.',
-            userId: userId
-        });
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+      const [result] = await db.query(
+        'INSERT INTO user (username, email, password, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())',
+        [username, email, hashedPassword]
+      );
+      const userId = result.insertId;
+  
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      const otpExpiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 menit
+      await db.query(
+        'INSERT INTO user_otp (user_id, otp, otp_expires_at) VALUES (?, ?, ?)',
+        [userId, otp, otpExpiresAt]
+      );
+  
+      const mailOptions = {
+        from: 'your-email@gmail.com',
+        to: email,
+        subject: 'manarakubah@gmail.com',
+        text: `Kode OTP Anda adalah: ${otp}. Kode ini akan kedaluwarsa dalam 15 menit.`
+      };
+  
+      await transporter.sendMail(mailOptions);
+  
+      res.status(201).json({
+        message: 'Registrasi berhasil. Silakan periksa email Anda untuk verifikasi.',
+        userId: userId
+      });
     } catch (error) {
-        errorHandler.error(error);
+      next(error);
     }
 };
 
