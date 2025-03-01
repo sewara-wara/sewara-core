@@ -80,7 +80,7 @@ const sendOtp = async (userId, email) => {
 exports.resendOtp = async (req, res, next) => {
     const { email } = req.body;
     try {
-        const [users] = await db.query('SELECT id FROM users WHERE email = ?', [email]);
+        const [users] = await db.query('SELECT id FROM user WHERE email = ?', [email]);
         if (users.length === 0) {
             return next(errorResponse('User tidak ditemukan', 404));
         }
@@ -103,7 +103,7 @@ exports.verifyEmail = async (req, res, next) => {
             return next(errorResponse('Email dan OTP wajib diisi', statusCode.bad_request));
         }
     
-        const [users] = await db.query('SELECT id, is_verified FROM users WHERE email = ?', [email]);
+        const [users] = await db.query('SELECT id, is_verified FROM user WHERE email = ?', [email]);
         if (users.length === 0) {
             return next(errorResponse('User tidak ditemukan', statusCode.not_found));
         }
