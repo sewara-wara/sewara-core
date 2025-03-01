@@ -43,9 +43,9 @@ exports.register = async (req, res, next) => {
       );
   
       const mailOptions = {
-        from: 'your-email@gmail.com',
+        from: 'manarakubah@gmail.com',
         to: email,
-        subject: 'manarakubah@gmail.com',
+        subject: 'Verifikasi Email Anda',
         text: `Kode OTP Anda adalah: ${otp}. Kode ini akan kedaluwarsa dalam 15 menit.`
       };
   
