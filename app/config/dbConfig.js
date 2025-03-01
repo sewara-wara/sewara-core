@@ -6,8 +6,6 @@ const pool = mySql.createConnection({
   user: env.username,
   password: env.password,
   database: env.database,
-})
+});
 
-module.exports = {
-  pool,
-}
+module.exports = pool.promise();
