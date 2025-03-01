@@ -10,8 +10,8 @@ const saltRounds = 10;
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'suddhuha@gmail.com',
-    pass: '1SamsuD214'
+    user: 'manarakubah@gmail.com',
+    pass: 'iphn cuqg regs spyf'
   }
 });
 
@@ -43,7 +43,7 @@ exports.register = async (req, res, next) => {
       );
   
       const mailOptions = {
-        from: 'suddhuha@gmail.com',
+        from: 'manarakubah@gmail.com',
         to: email,
         subject: 'Verifikasi Email Anda',
         text: `Kode OTP Anda adalah: ${otp}. Kode ini akan kedaluwarsa dalam 15 menit.`
