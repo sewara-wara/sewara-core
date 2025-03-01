@@ -7,6 +7,8 @@ module.exports = {
     not_found: "404",
     wrong_password: "405",
     empty_data: "406",
+    otp_not_valid: "407",
+    otp_expired: "408",
     already_exists: "409",
     internal_server_error: "500",
     service_not_available: "503",
