@@ -3,16 +3,19 @@ const bcrypt = require("bcryptjs");
 const statusCode = require('../config/statusCode.js');
 const errorHandler = require("../middleware/error.js");
 
-exports.getUsers = (request, response) => {
-    db.pool.query("SELECT * FROM user", (error, results) => {
-        errorHandler.error(error, response)
-        
-        response.json({
+exports.getUsers = async (req, res) => {
+    try {
+        const users = await db.pool.query('SELECT * FROM user');
+
+        res.json({
             code: statusCode.success,
-            message: "Berhasil mengambil data semua user",
-            data: results
+            message: 'Mengambil data user berhasil.',
+            data: users
         });
-    })
+    } catch (error) {
+        console.error(error);
+        // errorHandler.error(error);
+    }
 }
 
 // exports.getUserById = (request, response) => {
