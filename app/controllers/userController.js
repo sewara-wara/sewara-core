@@ -4,17 +4,15 @@ const statusCode = require('../config/statusCode.js');
 const errorHandler = require("../middleware/error.js");
 
 exports.getUsers = async (req, res) => {
-    try {
-        const [users] = await db.pool.query('SELECT * FROM user');
-
-        res.json({
+    db.pool.query("SELECT * FROM user", (error, results) => {
+        errorHandler.error(error, response)
+        
+        response.json({
             code: statusCode.success,
-            message: 'Mengambil data user berhasil.',
-            data: users
+            message: "Berhasil mengambil data semua user",
+            data: results
         });
-    } catch (error) {
-        errorHandler.error(error);
-    }
+    })
 }
 
 // exports.getUserById = (request, response) => {
