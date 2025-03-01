@@ -9,6 +9,7 @@ const auth = require("../middlewares/auth.js");
 const authController = require('../controllers/authController.js');
 // router.post('/api/login', authController.login);
 router.post('/api/register', authController.register);
+router.post('/api/resend-otp', authController.resendOtp);
 router.post('/api/verify-email', authController.verifyEmail);
  
 const user = require('../controllers/userController.js');
