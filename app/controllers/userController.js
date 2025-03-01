@@ -17,20 +17,6 @@ exports.getUsers = async (req, res) => {
     }
 }
 
-exports.getUser = async (req, res) => {
-    try {
-        const [users] = await db.query('SELECT * FROM user');
-
-        res.json({
-            code: statusCode.success,
-            message: 'Mengambil data user berhasil.',
-            data: users
-        });
-    } catch (error) {
-        errorHandler.errorCatch(error);
-    }
-}
-
 // exports.getUserById = (request, response) => {
 //     const id = request.id_user
 
