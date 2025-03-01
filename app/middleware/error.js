@@ -3,7 +3,7 @@ const statusCode = require('../config/statusCode.js');
 exports.errorCatch = (error, response) => {
     if (error) {
         console.error(error.stack);
-        response.status(statusCode.internal_server_error).json({
+        return response.status(statusCode.internal_server_error).send({
             code: statusCode.internal_server_error,
             message: error.message,
             error: error
