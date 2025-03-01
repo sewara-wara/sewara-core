@@ -60,7 +60,7 @@ const sendOtp = async (userId, email) => {
       const otpExpiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 menit
   
       await db.query(
-        'INSERT INTO user_otps (user_id, otp, otp_expires_at) VALUES (?, ?, ?)',
+        'INSERT INTO user_otp (user_id, otp, otp_expires_at) VALUES (?, ?, ?)',
         [userId, otp, otpExpiresAt]
       );
   
@@ -118,7 +118,7 @@ exports.verifyEmail = async (req, res, next) => {
         }
     
         const [otpRecords] = await db.query(
-            'SELECT id, otp, otp_expires_at, is_used FROM user_otps WHERE user_id = ? AND otp = ? ORDER BY requested_at DESC LIMIT 1',
+            'SELECT id, otp, otp_expires_at, is_used FROM user_otp WHERE user_id = ? AND otp = ? ORDER BY requested_at DESC LIMIT 1',
             [user.id, otp]
         );
     
@@ -133,8 +133,8 @@ exports.verifyEmail = async (req, res, next) => {
             return next(errorResponse('OTP sudah digunakan atau kadaluarsa', statusCode.otp_expired));
         }
     
-        await db.query('UPDATE users SET is_verified = 1, updated_at = NOW() WHERE id = ?', [user.id]);
-        await db.query('UPDATE user_otps SET is_used = 1 WHERE id = ?', [otpRecord.id]);
+        await db.query('UPDATE user SET is_verified = 1, updated_at = NOW() WHERE id = ?', [user.id]);
+        await db.query('UPDATE user_otp SET is_used = 1 WHERE id = ?', [otpRecord.id]);
     
         res.status(statusCode.success).json({ 
             code: statusCode.success,
