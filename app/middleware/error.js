@@ -1,6 +1,6 @@
 const statusCode = require('../config/statusCode.js');
 
-exports.error = (error, response) => {
+exports.errorCatch = (error, response) => {
     if (error) {
         console.error(error);
         return response.status(statusCode.internal_server_error).send({
@@ -11,7 +11,7 @@ exports.error = (error, response) => {
     }
 }
 
-exports.error = (message, status) => {
+exports.error = (message, status, response) => {
     const error = new Error(message);
     const code = status || statusCode.internal_server_error;
     error.statusCode = code;

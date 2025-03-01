@@ -13,7 +13,7 @@ exports.getUsers = async (req, res) => {
             data: users
         });
     } catch (error) {
-        errorHandler.error(error);
+        errorHandler.errorCatch(error);
     }
 }
 
@@ -27,7 +27,7 @@ exports.getUser = async (req, res) => {
             data: users
         });
     } catch (error) {
-        errorHandler.error(error);
+        errorHandler.errorCatch(error);
     }
 }
 
