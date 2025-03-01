@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const statusCode = require('../config/statusCode.js');
 const errorHandler = require("../middleware/error.js");
 
-exports.getUsers = async (req, res) => {
+exports.getUsers = (request, response) => {
     db.pool.query("SELECT * FROM user", (error, results) => {
         errorHandler.error(error, response)
         
