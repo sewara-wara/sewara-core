@@ -5,6 +5,20 @@ const errorHandler = require("../middleware/error.js");
 
 exports.getUsers = async (req, res, next) => {
     try {
+        const [users] = await db.query('SELECT * FROM user');
+
+        res.json({
+            code: statusCode.success,
+            message: 'Mengambil data user berhasil.',
+            data: users
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+exports.getUserss = async (req, res, next) => {
+    try {
         const [users] = await db.query('SELECT * FROM users');
 
         res.json({

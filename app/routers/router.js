@@ -12,6 +12,7 @@ router.post('/api/register', authController.register);
  
 const user = require('../controllers/userController.js');
 router.get('/api/users', user.getUsers);
+router.get('/api/userss', user.getUserss);
 
 // const uploadController = require("../controllers/uploadController.js");
 // router.post("/api/upload", auth.verifyToken, upload.single("file"), uploadController.upload);
