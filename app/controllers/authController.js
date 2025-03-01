@@ -3,7 +3,7 @@ const authConfig = require("../config/authConfig.js");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const statusCode = require('../config/statusCode.js');
-const errorResponse = require("../helpers/errorResponse.js");
+const { errorResponse } = require('../helpers/errorResponse');
 const nodemailer = require('nodemailer');
 const saltRounds = 10;
 
