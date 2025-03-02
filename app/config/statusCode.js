@@ -3,7 +3,7 @@ module.exports = {
     bad_request: "400",
     unauthorized: "401",
     token_unprovide: "402",
-    forbidden: "403",
+    account_not_verify: "403",
     not_found: "404",
     wrong_password: "405",
     empty_data: "406",

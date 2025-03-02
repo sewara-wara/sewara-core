@@ -4,16 +4,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const statusCode = require('../config/statusCode.js');
 const { errorResponse } = require('../helpers/errorResponse');
-const nodemailer = require('nodemailer');
-const saltRounds = 10;
-
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: 'manarakubah@gmail.com',
-    pass: 'iphncuqgregsspyf'
-  }
-});
+const { sendOtp } = require('./otpController'); 
 
 exports.register = async (req, res, next) => {
     const { username, email, password } = req.body;
@@ -28,7 +19,7 @@ exports.register = async (req, res, next) => {
             return next(errorResponse('Email sudah terdaftar silahkan login.', statusCode.already_exists));
         }
 
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        const hashedPassword = await bcrypt.hash(password, 10);
         const [result] = await db.query(
             'INSERT INTO user (username, email, password, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())',
             [username, email, hashedPassword]
@@ -54,44 +45,44 @@ exports.register = async (req, res, next) => {
     }
 };
 
-const sendOtp = async (userId, email) => {
-    try {
-      const otp = Math.floor(100000 + Math.random() * 900000).toString();
-      const otpExpiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 menit
-  
-      await db.query(
-        'INSERT INTO user_otp (user_id, otp, otp_expires_at) VALUES (?, ?, ?)',
-        [userId, otp, otpExpiresAt]
-      );
-  
-      const mailOptions = {
-        from: 'manarakubah@gmail.com',
-        to: email,
-        subject: 'Verifikasi Email Anda',
-        text: `Kode OTP Anda adalah: ${otp}. Kode ini akan kedaluwarsa dalam 15 menit.`
-    };
-  
-      await transporter.sendMail(mailOptions);
-    } catch (error) {
-      throw new Error('Gagal mengirim OTP');
-    }
-};
+exports.login = async (req, res, next) => {
+    const { email, password } = req.body;
 
-exports.resendOtp = async (req, res, next) => {
-    const { email } = req.body;
     try {
-        const [users] = await db.query('SELECT id FROM user WHERE email = ?', [email]);
+        if (!email || !password) {
+            return next(errorResponse('Email dan password wajib diisi', 400));
+        }
+    
+        const [users] = await db.query('SELECT id, password, is_verified FROM user WHERE email = ?', [email]);
         if (users.length === 0) {
             return next(errorResponse('User tidak ditemukan', 404));
         }
     
         const user = users[0];
     
-        await sendOtp(user.id, email);
+        if (!user.is_verified) {
+            await sendOtp(user.id, email);
+            return res.status(statusCode.account_not_verify).json({
+                code: statusCode.account_not_verify,
+                message: 'Akun Anda belum diverifikasi. OTP telah dikirim ulang ke email Anda.'
+            });
+        }
     
-        res.status(200).json({ message: 'OTP berhasil dikirim ulang ke email Anda.' });
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return next(errorResponse('Password salah', 401));
+        }
+        let token = jwt.sign({ id: user.id }, authConfig.secret, {
+            expiresIn: 31536000 // 1 year
+        });
+        res.status(statusCode.success).json({
+            code: statusCode.success,
+            message: 'Login berhasil',
+            user: user,
+            session: token
+        });
     } catch (error) {
-        next(errorResponse('Gagal mengirim ulang OTP.', 500));
+        next(errorResponse('Login gagal, coba lagi nanti.', 500));
     }
 };
 
@@ -144,41 +135,3 @@ exports.verifyEmail = async (req, res, next) => {
         next(error);
     }
 };
-
-// exports.login = (request, response) => {
-//     const email = request.body.email
-//     const password = request.body.password
-
-//     let query = "SELECT * FROM users WHERE email = ?"
-//     db.pool.query(query, [email], (error, results) => {
-//         baseError.handleError(error, response)
-
-//         if (results.length == 0) {
-//             return response.json({
-//                 code: statusCode.empty_data,
-//                 message: "Akun tidak ditemukan"
-//             });
-//         }
-
-//         let passwordIsValid = bcrypt.compareSync(
-//             password,
-//             results[0].password
-//         );
-//         if (passwordIsValid) {
-//             let token = jwt.sign({ id: results[0].id }, authConfig.secret, {
-//                 expiresIn: 31536000 // 1 year
-//             });
-//             response.json({
-//                 code: statusCode.success,
-//                 message: "Login Berhasil",
-//                 data: results[0],
-//                 session: token
-//             });
-//         } else {
-//             response.json({
-//                 code: statusCode.wrong_password,
-//                 message: "Kata sandi salah"
-//             });
-//         }
-//     })
-// }
