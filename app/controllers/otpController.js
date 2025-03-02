@@ -1,5 +1,6 @@
 const db = require('../config/dbConfig.js');
 const nodemailer = require('nodemailer');
+const statusCode = require('../config/statusCode.js');
 const { errorResponse } = require('../helpers/errorResponse');
 
 const transporter = nodemailer.createTransport({

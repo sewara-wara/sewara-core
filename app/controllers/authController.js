@@ -37,8 +37,7 @@ exports.register = async (req, res, next) => {
     
         res.status(statusCode.success).json({
             code: statusCode.success,
-            message: 'Registrasi berhasil. Silakan periksa email Anda untuk verifikasi.',
-            userId: userId
+            message: 'Registrasi berhasil. Silakan periksa email Anda untuk verifikasi.'
         });
     } catch (error) {
         next(error);
