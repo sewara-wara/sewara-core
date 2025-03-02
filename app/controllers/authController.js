@@ -82,7 +82,7 @@ exports.login = async (req, res, next) => {
             session: token
         });
     } catch (error) {
-        next(errorResponse('Login gagal, coba lagi nanti.', 500));
+        next(error);
     }
 };
 

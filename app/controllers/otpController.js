@@ -1,6 +1,7 @@
 const db = require('../config/dbConfig.js');
 const nodemailer = require('nodemailer');
 const { errorResponse } = require('../helpers/errorResponse');
+const { sendOtp } = require('./otpController');
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -45,8 +46,10 @@ exports.resendOtp = async (req, res, next) => {
     
         await sendOtp(user.id, email);
     
-        res.status(200).json({ message: 'OTP berhasil dikirim ulang ke email Anda.' });
+        res.status(200).json({ 
+            message: 'OTP berhasil dikirim ulang ke email Anda.' 
+        });
     } catch (error) {
-        next(errorResponse('Gagal mengirim ulang OTP.', 500));
+        next(error);
     }
 };
