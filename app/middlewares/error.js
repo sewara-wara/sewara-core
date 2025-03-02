@@ -9,10 +9,3 @@ module.exports = (err, req, res, next) => {
         error: err
     });
 };
-
-
-// exports.errorResponse = (message, statusCode) => {
-//     const error = new Error(message);
-//     error.statusCode = statusCode;
-//     return error;
-// };

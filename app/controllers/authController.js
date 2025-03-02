@@ -50,12 +50,12 @@ exports.login = async (req, res, next) => {
 
     try {
         if (!email || !password) {
-            return next(errorResponse('Email dan password wajib diisi', 400));
+            return next(errorResponse('Email dan password wajib diisi', statusCode.bad_request));
         }
     
         const [users] = await db.query('SELECT id, password, is_verified FROM user WHERE email = ?', [email]);
         if (users.length === 0) {
-            return next(errorResponse('User tidak ditemukan', 404));
+            return next(errorResponse('User tidak ditemukan', statusCode.not_found));
         }
     
         const user = users[0];
@@ -70,7 +70,7 @@ exports.login = async (req, res, next) => {
     
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return next(errorResponse('Password salah', 401));
+            return next(errorResponse('Password salah', statusCode.unauthorized));
         }
         let token = jwt.sign({ id: user.id }, authConfig.secret, {
             expiresIn: 31536000 // 1 year
