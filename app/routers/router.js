@@ -11,8 +11,8 @@ router.post('/api/login', authController.login);
 router.post('/api/register', authController.register);
 router.post('/api/verify-email', authController.verifyEmail);
 
-const authController = require('../controllers/otpController.js');
-router.post('/api/resend-otp', authController.resendOtp);
+const otpController = require('../controllers/otpController.js');
+router.post('/api/resend-otp', otpController.resendOtp);
  
 const user = require('../controllers/userController.js');
 router.get('/api/users', user.getUsers);
