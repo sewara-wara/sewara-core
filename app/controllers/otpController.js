@@ -10,27 +10,26 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-module.exports = { sendOtp };
 const sendOtp = async (userId, email) => {
     try {
-      const otp = Math.floor(100000 + Math.random() * 900000).toString();
-      const otpExpiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 menit
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const otpExpiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 menit
+    
+        await db.query(
+            'INSERT INTO user_otp (user_id, otp, otp_expires_at) VALUES (?, ?, ?)',
+            [userId, otp, otpExpiresAt]
+        );
+    
+        const mailOptions = {
+            from: 'manarakubah@gmail.com',
+            to: email,
+            subject: 'Verifikasi Email Anda',
+            text: `Kode OTP Anda adalah: ${otp}. Kode ini akan kedaluwarsa dalam 15 menit.`
+        };
   
-      await db.query(
-        'INSERT INTO user_otp (user_id, otp, otp_expires_at) VALUES (?, ?, ?)',
-        [userId, otp, otpExpiresAt]
-      );
-  
-      const mailOptions = {
-        from: 'manarakubah@gmail.com',
-        to: email,
-        subject: 'Verifikasi Email Anda',
-        text: `Kode OTP Anda adalah: ${otp}. Kode ini akan kedaluwarsa dalam 15 menit.`
-    };
-  
-      await transporter.sendMail(mailOptions);
+        await transporter.sendMail(mailOptions);
     } catch (error) {
-      throw new Error('Gagal mengirim OTP');
+        throw new Error('Gagal mengirim OTP');
     }
 };
 
@@ -53,3 +52,4 @@ exports.resendOtp = async (req, res, next) => {
         next(error);
     }
 };
+module.exports = { sendOtp };
