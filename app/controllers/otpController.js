@@ -1,7 +1,6 @@
 const db = require('../config/dbConfig.js');
 const nodemailer = require('nodemailer');
 const { errorResponse } = require('../helpers/errorResponse');
-const { sendOtp } = require('./otpController');
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -11,7 +10,8 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-exports.sendOtp = async (userId, email) => {
+module.exports = { sendOtp };
+const sendOtp = async (userId, email) => {
     try {
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
       const otpExpiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 menit
