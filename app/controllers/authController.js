@@ -75,6 +75,7 @@ exports.login = async (req, res, next) => {
         let token = jwt.sign({ id: user.id }, authConfig.secret, {
             expiresIn: 31536000 // 1 year
         });
+        await db.query('UPDATE user SET token = ? WHERE id = ?', [token]);
         res.status(statusCode.success).json({
             code: statusCode.success,
             message: 'Login berhasil',

@@ -1,5 +1,6 @@
 const db = require('../config/dbConfig.js');
 const nodemailer = require('nodemailer');
+const { errorResponse } = require('../helpers/errorResponse');
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -29,5 +30,30 @@ exports.sendOtp = async (userId, email) => {
         await transporter.sendMail(mailOptions);
     } catch (error) {
         throw new Error('Gagal mengirim OTP');
+    }
+};
+
+exports.resendOtp = async (req, res, next) => {
+    const { email } = req.body;
+    try {
+        if (!email) {
+            return next(errorResponse('Email wajib diisi', statusCode.bad_request));
+        }
+
+        const [users] = await db.query('SELECT id FROM user WHERE email = ?', [email]);
+        if (users.length === 0) {
+            return next(errorResponse('User tidak ditemukan', statusCode.not_found));
+        }
+    
+        const user = users[0];
+    
+        await exports.sendOtp(user.id, email);
+    
+        res.status(statusCode.success).json({ 
+            code: statusCode.success,
+            message: 'OTP berhasil dikirim ulang ke email Anda.' 
+        });
+    } catch (error) {
+        next(error);
     }
 };
