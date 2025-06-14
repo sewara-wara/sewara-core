@@ -3,9 +3,9 @@ const authConfig = require("../config/authConfig.js");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const statusCode = require('../config/statusCode.js');
-const { errorResponse } = require('../helpers/errorResponse');
+const { errorResponse } = require('../helpers/errorHelper.js');
+const { sanitizeUser } = require('../helpers/userHelper');
 const { sendOtp } = require('./otpController'); 
-const { use } = require('express/lib/application.js');
 
 exports.register = async (req, res, next) => {
     const { name, email, password } = req.body;
@@ -59,9 +59,6 @@ exports.login = async (req, res, next) => {
         }
     
         const user = users[0];
-        user.name
-        user.email
-        user.image_profile
     
         if (!user.is_verified) {
             await sendOtp(user.id, email);
@@ -82,7 +79,7 @@ exports.login = async (req, res, next) => {
         res.status(statusCode.success).json({
             code: statusCode.success,
             message: 'Login berhasil',
-            user: user,
+            user: sanitizeUser(user),
             session: token
         });
     } catch (error) {
