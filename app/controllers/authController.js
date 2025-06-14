@@ -5,12 +5,13 @@ const bcrypt = require("bcryptjs");
 const statusCode = require('../config/statusCode.js');
 const { errorResponse } = require('../helpers/errorResponse');
 const { sendOtp } = require('./otpController'); 
+const { use } = require('express/lib/application.js');
 
 exports.register = async (req, res, next) => {
-    const { username, email, password } = req.body;
+    const { name, email, password } = req.body;
 
     try {
-        if (!username || !email || !password) {
+        if (!name || !email || !password) {
             return next(errorResponse('Semua field wajib diisi', statusCode.bad_request));
         }
     
@@ -21,8 +22,8 @@ exports.register = async (req, res, next) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const [result] = await db.query(
-            'INSERT INTO user (username, email, password, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())',
-            [username, email, hashedPassword]
+            'INSERT INTO user (name, email, password, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())',
+            [name, email, hashedPassword]
         );
         const userId = result.insertId;
     
@@ -58,6 +59,9 @@ exports.login = async (req, res, next) => {
         }
     
         const user = users[0];
+        user.name
+        user.email
+        user.image_profile
     
         if (!user.is_verified) {
             await sendOtp(user.id, email);
