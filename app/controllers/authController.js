@@ -53,7 +53,7 @@ exports.login = async (req, res, next) => {
             return next(errorResponse('Email dan password wajib diisi', statusCode.bad_request));
         }
     
-        const [users] = await db.query('SELECT id, password, is_verified FROM user WHERE email = ?', [email]);
+        const [users] = await db.query('SELECT * FROM user WHERE email = ?', [email]);
         if (users.length === 0) {
             return next(errorResponse('User tidak ditemukan', statusCode.not_found));
         }
