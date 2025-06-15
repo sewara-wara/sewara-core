@@ -55,7 +55,7 @@ exports.login = async (req, res, next) => {
     
         const [users] = await db.query('SELECT * FROM user WHERE email = ?', [email]);
         if (users.length === 0) {
-            return next(errorResponse('User tidak ditemukan', statusCode.not_found));
+            return next(errorResponse('Email belum terdaftar', statusCode.not_found));
         }
     
         const user = users[0];
