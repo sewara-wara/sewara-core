@@ -27,13 +27,6 @@ exports.register = async (req, res, next) => {
         );
         const userId = result.insertId;
     
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        const otpExpiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 menit
-        await db.query(
-            'INSERT INTO user_otp (user_id, otp, otp_expires_at) VALUES (?, ?, ?)',
-            [userId, otp, otpExpiresAt]
-        );
-    
         await sendOtp(userId, email);
     
         res.status(statusCode.success).json({
