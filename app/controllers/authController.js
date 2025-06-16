@@ -55,8 +55,8 @@ exports.login = async (req, res, next) => {
     
         if (!user.is_verified) {
             await sendOtp(user.id, email);
-            return res.status(statusCode.account_not_verify).json({
-                code: statusCode.account_not_verify,
+            return res.status(statusCode.forbidden).json({
+                code: statusCode.forbidden,
                 message: 'Akun Anda belum diverifikasi. OTP telah dikirim ulang ke email Anda'
             });
         }
