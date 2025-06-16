@@ -45,8 +45,15 @@ exports.resendOtp = async (req, res, next) => {
         if (users.length === 0) {
             return next(errorResponse('User tidak ditemukan', statusCode.not_found));
         }
-    
+
         const user = users[0];
+
+        if (user.is_verified) {
+            return res.status(statusCode.already_verify).json({
+                code: statusCode.already_verify,
+                message: 'Akun Anda sudah terverifikasi.'
+            });
+        }
     
         await exports.sendOtp(user.id, email);
     

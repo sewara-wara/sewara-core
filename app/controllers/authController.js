@@ -17,7 +17,7 @@ exports.register = async (req, res, next) => {
     
         const [existingUser] = await db.query('SELECT id FROM user WHERE email = ?', [email]);
         if (existingUser.length > 0) {
-            return next(errorResponse('Email sudah terdaftar silahkan login.', statusCode.already_exists));
+            return next(errorResponse('Email sudah terdaftar', statusCode.already_exists));
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -38,7 +38,7 @@ exports.register = async (req, res, next) => {
     
         res.status(statusCode.success).json({
             code: statusCode.success,
-            message: 'Registrasi berhasil. Silakan periksa email Anda untuk verifikasi.'
+            message: 'Registrasi berhasil. Silakan periksa email Anda untuk verifikasi'
         });
     } catch (error) {
         next(error);
@@ -64,7 +64,7 @@ exports.login = async (req, res, next) => {
             await sendOtp(user.id, email);
             return res.status(statusCode.account_not_verify).json({
                 code: statusCode.account_not_verify,
-                message: 'Akun Anda belum diverifikasi. OTP telah dikirim ulang ke email Anda.'
+                message: 'Akun Anda belum diverifikasi. OTP telah dikirim ulang ke email Anda'
             });
         }
     
