@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const authConfig = require("../config/authConfig.js");
 const statusCode = require('../config/statusCode.js');
 
-exports.verifyToken = async (req, res, next) => {
+exports.verifyToken = (req, res, next) => {
     let token = req.headers["x-access-token"];
 
     if (!token) {
@@ -11,16 +11,16 @@ exports.verifyToken = async (req, res, next) => {
             message: "No token provided!"
         });
     }
-
-    try {
-        const decoded = await verifyAsync(token, authConfig.secret);
-        req.id_user = decoded.id;
-        next();
-    } catch (err) {
+  
+    jwt.verify(token, authConfig.secret, (err, decoded) => {
+      if (err) {
         return res.status(statusCode.unauthorized).send({
             code: statusCode.unauthorized,
             message: "Unauthorized!",
             error: err
         });
-    }
+      }
+      req.id_user = decoded.id;
+      next();
+    });
 };
