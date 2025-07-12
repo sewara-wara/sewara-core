@@ -2,7 +2,7 @@ const db = require('../config/dbConfig.js');
 const statusCode = require('../config/statusCode.js');
 const { errorResponse } = require('../helpers/errorHelper.js');
 const { sanitizeUser } = require('../helpers/userHelper');
-const { sendOtp } = require('./otpController'); 
+const { sendOtp } = require('./otpController');
 
 exports.getUser = async (req, res, next) => {
     try {
@@ -20,7 +20,7 @@ exports.getUser = async (req, res, next) => {
 
 exports.getUserDetail = async (req, res, next) => {
     try {
-        const { id } = req.id_user;
+        const id = req.id_user;
 
         if (!id) {
             return res.status(statusCode.bad_request).json({
@@ -43,7 +43,7 @@ exports.getUserDetail = async (req, res, next) => {
         res.status(statusCode.success).json({
             code: statusCode.success,
             message: 'Mengambil detail user berhasil.',
-            data: sanitizeUser(user)
+            data: sanitizeUser(user[0])
         });
     } catch (error) {
         next(error);
@@ -52,7 +52,7 @@ exports.getUserDetail = async (req, res, next) => {
 
 exports.updateUser = async (req, res, next) => {
     try {
-        const { id } = req.id_user;
+        const id = req.id_user;
         const { name, email } = req.body;
 
         if (!name || !email) {
