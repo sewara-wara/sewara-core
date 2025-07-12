@@ -15,7 +15,9 @@ const otpController = require('../controllers/otpController.js');
 router.post('/api/resend-otp', otpController.resendOtp);
  
 const user = require('../controllers/userController.js');
-router.get('/api/users', user.getUsers);
+router.get('/api/user', user.getUser);
+router.get('/api/user/detail', auth.verifyToken, user.getUserDetail);
+router.get('/api/user/update', auth.verifyToken, user.updateUser);
 
 // const uploadController = require("../controllers/uploadController.js");
 // router.post("/api/upload", auth.verifyToken, upload.single("file"), uploadController.upload);

@@ -8,9 +8,9 @@ const { sanitizeUser } = require('../helpers/userHelper');
 const { sendOtp } = require('./otpController'); 
 
 exports.register = async (req, res, next) => {
-    const { name, email, password } = req.body;
-
     try {
+        const { name, email, password } = req.body;
+
         if (!name || !email || !password) {
             return next(errorResponse('Semua field wajib diisi', statusCode.bad_request));
         }
@@ -39,9 +39,9 @@ exports.register = async (req, res, next) => {
 };
 
 exports.login = async (req, res, next) => {
-    const { email, password } = req.body;
-
     try {
+        const { email, password } = req.body;
+
         if (!email || !password) {
             return next(errorResponse('Email dan password wajib diisi', statusCode.bad_request));
         }
@@ -81,9 +81,9 @@ exports.login = async (req, res, next) => {
 };
 
 exports.verifyEmail = async (req, res, next) => {
-    const { email, otp } = req.body;
-    
     try {
+        const { email, otp } = req.body;
+
         if (!email || !otp) {
             return next(errorResponse('Email dan OTP wajib diisi', statusCode.bad_request));
         }

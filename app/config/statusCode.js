@@ -1,5 +1,5 @@
 module.exports = {
-    success: 200,                  // OK
+    success: 200,                 // OK
     bad_request: 400,             // Bad Request – input tidak valid
     unauthorized: 401,            // Unauthorized – belum login / token invalid
     forbidden: 403,               // Forbidden – akun belum verifikasi / akses ditolak
@@ -8,7 +8,7 @@ module.exports = {
     gone: 410,                    // Gone – data kadaluarsa (misal: OTP expired)
 
     token_unprovide: 400,         // Token tidak diberikan – masuk Bad Request
-    forbidden: 403,      // Akun belum verifikasi – Forbidden
+    forbidden: 403,               // Akun belum verifikasi – Forbidden
     wrong_password: 400,          // Password salah – input valid tapi salah
     empty_data: 400,              // Data kosong – Bad Request
     otp_not_valid: 400,           // OTP salah – Bad Request

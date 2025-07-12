@@ -1,8 +1,10 @@
 const db = require('../config/dbConfig.js');
-const bcrypt = require("bcryptjs");
 const statusCode = require('../config/statusCode.js');
+const { errorResponse } = require('../helpers/errorHelper.js');
+const { sanitizeUser } = require('../helpers/userHelper');
+const { sendOtp } = require('./otpController'); 
 
-exports.getUsers = async (req, res, next) => {
+exports.getUser = async (req, res, next) => {
     try {
         const [users] = await db.query('SELECT * FROM user');
 
@@ -14,166 +16,63 @@ exports.getUsers = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-}
+};
 
-// exports.getUserById = (request, response) => {
-//     const id = request.id_user
+exports.getUserDetail = async (req, res, next) => {
+    try {
+        const { id } = req.id_user;
 
-//     let query = "SELECT * FROM user_apps WHERE id = ?"
-//     db.pool.query(query, [id], (error, results) => {
-//         baseError.handleError(error, response)
-        
-//         if (results.length == 0) {
-//             return response.json({
-//                 code: statusCode.empty_data,
-//                 message: "User tidak ditemukan dengan id : " + id
-//             });
-//         }
-        
-//         response.json({
-//             code: statusCode.success,
-//             message: "Detail user ditemukan dengan id : "+ results[0].id +" dan nama : " + results[0].name,
-//             data: results[0]
-//         });
-//     })
-// }
+        if (!id) {
+            return res.status(statusCode.bad_request).json({
+                code: statusCode.bad_request,
+                message: 'Parameter ID wajib disertakan.',
+                data: null
+            });
+        }
 
-// exports.updateProfile = (request, response) => {
-//     const id = request.id_user
-//     const name = request.body.name
-//     const email = request.body.email
-//     const password = request.body.password
+        const [user] = await db.query('SELECT * FROM user WHERE id = ?', [id]);
 
-//     var bcrypPassword = bcrypt.hashSync(password, 8)
-    
-//     let query = "UPDATE user_apps SET name = ?, email = ?, password = ? WHERE id = ?"
-//     db.pool.query(query, [name, email, bcrypPassword, id], (error, results) => {
-//         baseError.handleError(error, response)
-        
-//         response.json({
-//             code: statusCode.success,
-//             message: "Update profile Berhasil",
-//             data: results
-//         });
-//     })
-// }
+        if (user.length === 0) {
+            return res.status(statusCode.not_found).json({
+                code: statusCode.not_found,
+                message: 'User tidak ditemukan.',
+                data: null
+            });
+        }
 
-// exports.deleteUser = (request, response) => {
-//     const id = request.id_user
+        res.status(statusCode.success).json({
+            code: statusCode.success,
+            message: 'Mengambil detail user berhasil.',
+            data: sanitizeUser(user)
+        });
+    } catch (error) {
+        next(error);
+    }
+};
 
-//     let querySelect = "SELECT * FROM user_apps WHERE id = ?"
-//     db.pool.query(querySelect, [id], (error, results) => {
-//         baseError.handleError(error, response)
+exports.updateUser = async (req, res, next) => {
+    try {
+        const { id } = req.id_user;
+        const { name, email } = req.body;
 
-//         if (results.length == 0) {
-//             return response.json({
-//                 code: statusCode.empty_data,
-//                 message: "User tidak ditemukan"
-//             });
-//         }
+        if (!name || !email) {
+            return next(errorResponse('Nama dan email wajib diisi', statusCode.bad_request));
+        }
 
-//         let queryDelete = "DELETE FROM user_apps WHERE id = ?"
-//         db.pool.query(queryDelete, [id], (error, results) => {
-//             baseError.handleError(error, response)
-            
-//             response.json({
-//                 code: statusCode.success,
-//                 message: "Berhasil menghapus data user dengan id : "+ id
-//             });
-//         })
-//     })
-// }
+        const [updateResult] = await db.query(
+            'UPDATE user SET name = ?, email = ?, updated_at = NOW() WHERE id = ?',
+            [name, email, id]
+        );
 
-// exports.getTotalCountAmplop = (request, response) => {
-//     const id_user = request.id_user
+        if (updateResult.affectedRows === 0) {
+            return next(errorResponse('User tidak ditemukan', statusCode.not_found));
+        }
 
-//     let query = "SELECT `tr_amplop`.`id_user` AS `id_user`, `tr_amplop`.`status` AS `status`, count(`tr_amplop`.`status`) AS `count`, sum(`tr_amplop`.`nominal`) AS `total` FROM `tr_amplop` GROUP BY `tr_amplop`.`id_user`, `tr_amplop`.`status` ORDER BY `tr_amplop`.`id_user` ASC, `tr_amplop`.`status` ASC"
-//     db.pool.query(query, [id_user], (error, results) => {
-//         baseError.handleError(error, response)
-
-//         if (results.length == 0) {
-//             return response.json({
-//                 code: statusCode.empty_data,
-//                 message: "Data dengan id user "+ id_user +" tidak ditemukan"
-//             });
-//         }
-        
-//         response.json({
-//             code: statusCode.success,
-//             message: "Total count user id : "+ id_user +" ditemukan",
-//             data: results
-//         });
-//     })
-// }
-
-// exports.getTotalCountDhuwit = (request, response) => {
-//     const id_user = request.id_user
-
-//     let query = "SELECT `tr_dhuwit`.`id_user` AS `id_user`, `tr_dhuwit`.`status` AS `status`, count(`tr_dhuwit`.`status`) AS `count`, sum(`tr_dhuwit`.`nominal`) AS `total` FROM `tr_dhuwit` GROUP BY `tr_dhuwit`.`id_user`, `tr_dhuwit`.`status` ORDER BY `tr_dhuwit`.`id_user` ASC, `tr_dhuwit`.`status` ASC"
-//     db.pool.query(query, [id_user], (error, results) => {
-//         baseError.handleError(error, response)
-
-//         if (results.length == 0) {
-//             return response.json({
-//                 code: statusCode.empty_data,
-//                 message: "Data dengan id user "+ id_user +" tidak ditemukan"
-//             });
-//         }
-        
-//         response.json({
-//             code: statusCode.success,
-//             message: "Total count user id : "+ id_user +" ditemukan",
-//             data: results
-//         });
-//     })
-// }
-
-// exports.getTotalSpendDhuwitMonth = (request, response) => {
-//     const id_user = request.id_user
-//     const today = new Date()
-//     const month = today.getMonth() + 1
-
-//     let query = "SELECT SUM(tr_dhuwit.nominal) AS `total_spend_month` FROM tr_dhuwit WHERE MONTH(tr_dhuwit.date_dhuwit) = ? AND id_user = ? AND status = 2"
-//     db.pool.query(query, [month ,id_user], (error, results) => {
-//         baseError.handleError(error, response)
-
-//         if (results.length == 0) {
-//             return response.json({
-//                 code: statusCode.empty_data,
-//                 message: "Data dengan id user "+ id_user +" tidak ditemukan"
-//             });
-//         }
-        
-//         response.json({
-//             code: statusCode.success,
-//             message: "Total bulan ini dengan user id : "+ id_user +" ditemukan",
-//             data: results[0]
-//         });
-//     })
-// }
-
-// exports.getTotalSpendDhuwitDay = (request, response) => {
-//     const id_user = request.id_user
-//     const date = request.body.date
-
-//     const from = date + " 00:00:00"
-//     const to = date + " 23:59:59"
-
-//     let query = "SELECT SUM(tr_dhuwit.nominal) AS `total_spend_day` FROM tr_dhuwit WHERE tr_dhuwit.date_dhuwit BETWEEN ? AND ? AND id_user = ? AND status = 2"
-//     db.pool.query(query, [from, to ,id_user], (error, results) => {
-//         baseError.handleError(error, response)
-
-//         if (results.length == 0) {
-//             return response.json({
-//                 code: statusCode.empty_data,
-//                 message: "Data dengan id user "+ id_user +" tidak ditemukan"
-//             });
-//         }
-        
-//         response.json({
-//             code: statusCode.success,
-//             message: "Total hari ini dengan user id : "+ id_user +" ditemukan",
-//             data: results[0]
-//         });
-//     })
-// }
+        res.status(statusCode.success).json({
+            code: statusCode.success,
+            message: 'Data user berhasil diperbarui.'
+        });
+    } catch (error) {
+        next(error);
+    }
+};

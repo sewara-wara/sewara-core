@@ -35,8 +35,9 @@ exports.sendOtp = async (userId, email) => {
 };
 
 exports.resendOtp = async (req, res, next) => {
-    const { email } = req.body;
     try {
+        const { email } = req.body;
+
         if (!email) {
             return next(errorResponse('Email wajib diisi', statusCode.bad_request));
         }
