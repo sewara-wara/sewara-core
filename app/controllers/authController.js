@@ -103,7 +103,7 @@ exports.verifyEmail = async (req, res, next) => {
         }
     
         const [otpRecords] = await db.query(
-            'SELECT id, otp, otp_expires_at, is_used FROM user_otp WHERE user_id = ? AND otp = ? ORDER BY requested_at DESC LIMIT 1',
+            'SELECT id, otp, otp_expires_at, is_used FROM user_otp WHERE user_id = ? AND otp = ? ORDER BY created_at DESC LIMIT 1',
             [user.id, otp]
         );
     
@@ -123,7 +123,7 @@ exports.verifyEmail = async (req, res, next) => {
     
         res.status(statusCode.success).json({ 
             code: statusCode.success,
-            message: 'Email berhasil diverifikasi' 
+            message: 'Email berhasil diverifikasi, silahkah login'
         });
     } catch (error) {
         next(error);
