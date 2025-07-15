@@ -1,8 +1,7 @@
 const env = require('./env.js');
-const fs = require('fs');
-const mySql = require('mysql2');
+const mysql = require('mysql2/promise');
 
-const pool = mySql.createConnection({
+const pool = mysql.createPool({
   host: env.host,
   port: env.port,
   user: env.username,
@@ -13,6 +12,4 @@ const pool = mySql.createConnection({
   }
 });
 
-module.exports = {
-  pool,
-}
+module.exports = pool;
