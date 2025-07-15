@@ -103,7 +103,7 @@ exports.verifyEmail = async (req, res, next) => {
         }
     
         const [otpRecords] = await db.query(
-            'SELECT id, otp, otp_expires_at, is_used FROM user_otp WHERE user_id = ? AND otp = ? ORDER BY created_at DESC LIMIT 1',
+            'SELECT id, otp, otp_expired_at, is_used FROM user_otp WHERE user_id = ? AND otp = ? ORDER BY created_at DESC LIMIT 1',
             [user.id, otp]
         );
     
@@ -114,7 +114,7 @@ exports.verifyEmail = async (req, res, next) => {
         const otpRecord = otpRecords[0];
         const now = new Date();
     
-        if (otpRecord.is_used || now > new Date(otpRecord.otp_expires_at)) {
+        if (otpRecord.is_used || now > new Date(otpRecord.otp_expired_at)) {
             return next(errorResponse('OTP sudah digunakan atau kadaluarsa', statusCode.otp_expired));
         }
     

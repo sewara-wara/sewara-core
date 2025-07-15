@@ -17,7 +17,7 @@ exports.sendOtp = async (userId, email) => {
         const otpExpiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 menit
     
         await db.query(
-            'INSERT INTO user_otp (user_id, otp, otp_expires_at) VALUES (?, ?, ?)',
+            'INSERT INTO user_otp (user_id, otp, otp_expired_at) VALUES (?, ?, ?)',
             [userId, otp, otpExpiresAt]
         );
     
