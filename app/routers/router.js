@@ -23,7 +23,8 @@ router.get('/api/user/update', auth.verifyToken, user.updateUser);
 router.post('/test-bcrypt', async (req, res) => {
     const { raw, hash } = req.body;
     const isMatch = await bcrypt.compare(raw, hash);
-    res.json({ match: isMatch });
+    const hashed = await bcrypt.hash(raw, 10);
+    res.json({ hashed, match: isMatch });
 });
 
 
