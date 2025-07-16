@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const auth = require("../middlewares/auth.js");
+const bcrypt = require("bcryptjs");
 // const upload = require("../middleware/upload.js");
 
 // const version = require('../controllers/versionController.js');
