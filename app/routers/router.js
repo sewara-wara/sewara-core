@@ -19,6 +19,13 @@ router.get('/api/user', user.getUser);
 router.get('/api/user/detail', auth.verifyToken, user.getUserDetail);
 router.get('/api/user/update', auth.verifyToken, user.updateUser);
 
+router.post('/test-bcrypt', async (req, res) => {
+    const { raw, hash } = req.body;
+    const isMatch = await bcrypt.compare(raw, hash);
+    res.json({ match: isMatch });
+});
+
+
 // const uploadController = require("../controllers/uploadController.js");
 // router.post("/api/upload", auth.verifyToken, upload.single("file"), uploadController.upload);
 
