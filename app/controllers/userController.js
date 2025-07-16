@@ -68,9 +68,13 @@ exports.updateUser = async (req, res, next) => {
             return next(errorResponse('User tidak ditemukan', statusCode.not_found));
         }
 
+        const [users] = await db.query('SELECT * FROM user WHERE id = ?', [id]);
+        const user = users[0];
+
         res.status(statusCode.success).json({
             code: statusCode.success,
-            message: 'Data user berhasil diperbarui.'
+            message: 'Data user berhasil diperbarui.',
+            data: sanitizeUser(user)
         });
     } catch (error) {
         next(error);
