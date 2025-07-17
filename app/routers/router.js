@@ -22,6 +22,10 @@ router.post('/api/user/update', auth.verifyToken, user.updateUser);
 router.post('/api/user/update-password', auth.verifyToken, user.updatePassword);
 router.post('/api/user/delete', auth.verifyToken, user.deleteUser);
 
+const question = require('../controllers/questionController.js');
+router.get('/api/question', auth.verifyToken, question.getQuestions);
+router.post('/api/question/create', auth.verifyToken, question.createQuestion);
+
 // const uploadController = require("../controllers/uploadController.js");
 // router.post("/api/upload", auth.verifyToken, upload.single("file"), uploadController.upload);
 
