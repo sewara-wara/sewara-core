@@ -13,7 +13,7 @@ exports.createQuestion = async (req, res, next) => {
         await db.query(`
             INSERT INTO questions (user_id, content, image)
             VALUES (?, ?, ?)
-        `, [id, content, image || null]);
+        `, [id, question, image || null]);
 
         res.status(statusCode.success).json({
             code: statusCode.success,
