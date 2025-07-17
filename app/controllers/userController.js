@@ -6,7 +6,7 @@ const { sanitizeUser } = require('../helpers/userHelper');
 
 exports.getUser = async (req, res, next) => {
     try {
-        const [users] = await db.query('SELECT * FROM user');
+        const [users] = await db.query('SELECT * FROM users');
 
         res.status(statusCode.success).json({
             code: statusCode.success,
@@ -30,7 +30,7 @@ exports.getUserDetail = async (req, res, next) => {
             });
         }
 
-        const [user] = await db.query('SELECT * FROM user WHERE id = ?', [id]);
+        const [user] = await db.query('SELECT * FROM users WHERE id = ?', [id]);
 
         if (user.length === 0) {
             return res.status(statusCode.not_found).json({
@@ -60,7 +60,7 @@ exports.updateUser = async (req, res, next) => {
         }
 
         const [updateResult] = await db.query(
-            'UPDATE user SET name = ?, email = ?, updated_at = NOW() WHERE id = ?',
+            'UPDATE users SET name = ?, email = ?, updated_at = NOW() WHERE id = ?',
             [name, email, id]
         );
 
@@ -68,7 +68,7 @@ exports.updateUser = async (req, res, next) => {
             return next(errorResponse('User tidak ditemukan', statusCode.not_found));
         }
 
-        const [users] = await db.query('SELECT * FROM user WHERE id = ?', [id]);
+        const [users] = await db.query('SELECT * FROM users WHERE id = ?', [id]);
         const user = users[0];
 
         res.status(statusCode.success).json({
@@ -90,7 +90,7 @@ exports.updatePassword = async (req, res, next) => {
             return next(errorResponse('Kata sandi lama dan kata sandi baru wajib diisi', statusCode.bad_request));
         }
         
-        const [users] = await db.query('SELECT password FROM user WHERE id = ?', [id]);
+        const [users] = await db.query('SELECT password FROM users WHERE id = ?', [id]);
         if (users.length === 0) {
             return next(errorResponse('User tidak ditemukan', statusCode.not_found));
         }
@@ -106,7 +106,7 @@ exports.updatePassword = async (req, res, next) => {
         const hashedNewPassword = await bcrypt.hash(new_password, 10);
 
         await db.query(
-            'UPDATE user SET password = ?, updated_at = NOW() WHERE id = ?',
+            'UPDATE users SET password = ?, updated_at = NOW() WHERE id = ?',
             [hashedNewPassword, id]
         );
 
@@ -124,7 +124,7 @@ exports.deleteUser = async (req, res, next) => {
         const id = req.id_user;
 
         await db.query(
-            'UPDATE user SET status = ?, updated_at = NOW() WHERE id = ?',
+            'UPDATE users SET status = ?, updated_at = NOW() WHERE id = ?',
             [0, id]
         );
 

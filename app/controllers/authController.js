@@ -15,14 +15,14 @@ exports.register = async (req, res, next) => {
             return next(errorResponse('Semua field wajib diisi', statusCode.bad_request));
         }
     
-        const [existingUser] = await db.query('SELECT id FROM user WHERE email = ?', [email]);
+        const [existingUser] = await db.query('SELECT id FROM users WHERE email = ?', [email]);
         if (existingUser.length > 0) {
             return next(errorResponse('Email sudah terdaftar', statusCode.already_exists));
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const [result] = await db.query(
-            'INSERT INTO user (name, email, password, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())',
+            'INSERT INTO users (name, email, password, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())',
             [name, email, hashedPassword]
         );
         const userId = result.insertId;
@@ -46,7 +46,7 @@ exports.login = async (req, res, next) => {
             return next(errorResponse('Email dan password wajib diisi', statusCode.bad_request));
         }
     
-        const [users] = await db.query('SELECT * FROM user WHERE email = ? AND status = 1', [email]);
+        const [users] = await db.query('SELECT * FROM users WHERE email = ? AND status = 1', [email]);
         if (users.length === 0) {
             return next(errorResponse('Akun tidak ditemukan', statusCode.not_found));
         }
@@ -68,7 +68,7 @@ exports.login = async (req, res, next) => {
         let token = jwt.sign({ id: user.id }, authConfig.secret, {
             expiresIn: 31536000 // 1 year
         });
-        await db.query('UPDATE user SET token = ? WHERE id = ?', [token, user.id]);
+        await db.query('UPDATE users SET token = ? WHERE id = ?', [token, user.id]);
         res.status(statusCode.success).json({
             code: statusCode.success,
             message: 'Login berhasil',
@@ -88,7 +88,7 @@ exports.verifyEmail = async (req, res, next) => {
             return next(errorResponse('Email dan OTP wajib diisi', statusCode.bad_request));
         }
     
-        const [users] = await db.query('SELECT id, is_verified FROM user WHERE email = ?', [email]);
+        const [users] = await db.query('SELECT id, is_verified FROM users WHERE email = ?', [email]);
         if (users.length === 0) {
             return next(errorResponse('User tidak ditemukan', statusCode.not_found));
         }
@@ -103,7 +103,7 @@ exports.verifyEmail = async (req, res, next) => {
         }
     
         const [otpRecords] = await db.query(
-            'SELECT id, otp, otp_expired_at, is_used FROM user_otp WHERE user_id = ? AND otp = ? ORDER BY created_at DESC LIMIT 1',
+            'SELECT id, otp, otp_expired_at, is_used FROM user_otps WHERE user_id = ? AND otp = ? ORDER BY created_at DESC LIMIT 1',
             [user.id, otp]
         );
     
@@ -118,8 +118,8 @@ exports.verifyEmail = async (req, res, next) => {
             return next(errorResponse('OTP sudah digunakan atau kadaluarsa', statusCode.otp_expired));
         }
     
-        await db.query('UPDATE user SET is_verified = 1, updated_at = NOW() WHERE id = ?', [user.id]);
-        await db.query('UPDATE user_otp SET is_used = 1 WHERE id = ?', [otpRecord.id]);
+        await db.query('UPDATE users SET is_verified = 1, updated_at = NOW() WHERE id = ?', [user.id]);
+        await db.query('UPDATE user_otps SET is_used = 1 WHERE id = ?', [otpRecord.id]);
     
         res.status(statusCode.success).json({ 
             code: statusCode.success,

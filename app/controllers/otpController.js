@@ -17,7 +17,7 @@ exports.sendOtp = async (userId, email) => {
         const otpExpiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 menit
     
         await db.query(
-            'INSERT INTO user_otp (user_id, otp, otp_expired_at) VALUES (?, ?, ?)',
+            'INSERT INTO user_otps (user_id, otp, otp_expired_at) VALUES (?, ?, ?)',
             [userId, otp, otpExpiresAt]
         );
     
@@ -42,7 +42,7 @@ exports.resendOtp = async (req, res, next) => {
             return next(errorResponse('Email wajib diisi', statusCode.bad_request));
         }
 
-        const [users] = await db.query('SELECT id FROM user WHERE email = ?', [email]);
+        const [users] = await db.query('SELECT id FROM users WHERE email = ?', [email]);
         if (users.length === 0) {
             return next(errorResponse('User tidak ditemukan', statusCode.not_found));
         }
