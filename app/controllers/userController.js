@@ -1,8 +1,8 @@
 const db = require('../config/dbConfig.js');
 const statusCode = require('../config/statusCode.js');
+const bcrypt = require("bcryptjs");
 const { errorResponse } = require('../helpers/errorHelper.js');
 const { sanitizeUser } = require('../helpers/userHelper');
-const { sendOtp } = require('./otpController');
 
 exports.getUser = async (req, res, next) => {
     try {
