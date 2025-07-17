@@ -39,7 +39,6 @@ exports.getAllQuestions = async (req, res, next) => {
                 q.id,
                 q.user_id,
                 u.name AS user_name,
-                q.title,
                 q.content,
                 q.image,
                 q.created_at,
