@@ -20,6 +20,7 @@ router.get('/api/user', user.getUser);
 router.get('/api/user/detail', auth.verifyToken, user.getUserDetail);
 router.post('/api/user/update', auth.verifyToken, user.updateUser);
 router.post('/api/user/update-password', auth.verifyToken, user.updatePassword);
+router.post('/api/user/delete', auth.verifyToken, user.deleteUser);
 
 // const uploadController = require("../controllers/uploadController.js");
 // router.post("/api/upload", auth.verifyToken, upload.single("file"), uploadController.upload);

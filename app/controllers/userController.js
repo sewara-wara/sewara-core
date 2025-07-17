@@ -118,3 +118,21 @@ exports.updatePassword = async (req, res, next) => {
         next(error);
     }
 };
+
+exports.deleteUser = async (req, res, next) => {
+    try {
+        const id = req.id_user;
+
+        await db.query(
+            'UPDATE user SET status = ?, updated_at = NOW() WHERE id = ?',
+            [0, id]
+        );
+
+        res.status(statusCode.success).json({
+            code: statusCode.success,
+            message: 'Akun Anda telah berhasil dihapus dari sistem kami. Terima kasih telah menggunakan layanan kami.'
+        });
+    } catch (error) {
+        next(error);
+    }
+};
