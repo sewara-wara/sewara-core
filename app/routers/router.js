@@ -23,7 +23,8 @@ router.post('/api/user/update-password', auth.verifyToken, user.updatePassword);
 router.post('/api/user/delete', auth.verifyToken, user.deleteUser);
 
 const question = require('../controllers/questionController.js');
-router.get('/api/question', auth.verifyToken, question.getQuestions);
+router.get('/api/question', auth.verifyToken, question.getAllQuestions);
+router.get('/api/my-question', auth.verifyToken, question.getUserQuestions);
 router.post('/api/question/create', auth.verifyToken, question.createQuestion);
 
 // const uploadController = require("../controllers/uploadController.js");
