@@ -2,58 +2,58 @@ const db = require('../config/dbConfig.js');
 const statusCode = require('../config/statusCode.js');
 const { errorResponse } = require('../helpers/errorHelper.js');
 
-exports.createQuestion = async (req, res, next) => {
+exports.createPost = async (req, res, next) => {
     try {
         const id = req.id_user;
-        const { question, image } = req.body;
+        const { content, image } = req.body;
 
-        if (!question) {
-            return next(errorResponse('Pertanyaan wajib diisi', statusCode.bad_request));
+        if (!content) {
+            return next(errorResponse('Konten wajib diisi', statusCode.bad_request));
         }
 
         await db.query(`
-            INSERT INTO questions (user_id, content, image)
+            INSERT INTO posts (user_id, content, image)
             VALUES (?, ?, ?)
-        `, [id, question, image || null]);
+        `, [id, content, image || null]);
 
         res.status(statusCode.success).json({
             code: statusCode.success,
-            message: 'Pertanyaan berhasil dibuat.'
+            message: 'Postingan berhasil dibuat.'
         });
     } catch (error) {
         next(error);
     }
 };
 
-exports.getAllQuestions = async (req, res, next) => {
+exports.getAllPosts = async (req, res, next) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const offset = (page - 1) * limit;
 
         const [[{ total }]] = await db.query(`
-            SELECT COUNT(*) AS total FROM questions
+            SELECT COUNT(*) AS total FROM posts
         `);
 
-        const [questions] = await db.query(`
+        const [posts] = await db.query(`
             SELECT 
-                q.id,
-                q.user_id,
+                p.id,
+                p.user_id,
                 u.name AS user_name,
-                q.content,
-                q.image,
-                q.created_at,
-                q.updated_at
-            FROM questions q
-            JOIN users u ON q.user_id = u.id
-            ORDER BY q.created_at DESC
+                p.content,
+                p.image,
+                p.created_at,
+                p.updated_at
+            FROM posts p
+            JOIN users u ON p.user_id = u.id
+            ORDER BY p.created_at DESC
             LIMIT ? OFFSET ?
         `, [limit, offset]);
 
         res.status(statusCode.success).json({
             code: statusCode.success,
-            message: 'Mengambil semua data pertanyaan berhasil.',
-            data: questions,
+            message: 'Mengambil semua data postingan berhasil.',
+            data: posts,
             pagination: {
                 total,
                 page,
@@ -66,7 +66,7 @@ exports.getAllQuestions = async (req, res, next) => {
     }
 };
 
-exports.getUserQuestions = async (req, res, next) => {
+exports.getUserPosts = async (req, res, next) => {
     try {
         const id = req.id_user;
 
@@ -75,29 +75,29 @@ exports.getUserQuestions = async (req, res, next) => {
         const offset = (page - 1) * limit;
 
         const [[{ total }]] = await db.query(`
-            SELECT COUNT(*) AS total FROM questions WHERE user_id = ?
+            SELECT COUNT(*) AS total FROM posts WHERE user_id = ?
         `, [id]);
 
-        const [questions] = await db.query(`
+        const [posts] = await db.query(`
             SELECT 
-                q.id,
-                q.user_id,
+                p.id,
+                p.user_id,
                 u.name AS user_name,
-                q.content,
-                q.image,
-                q.created_at,
-                q.updated_at
-            FROM questions q
-            JOIN users u ON q.user_id = u.id
-            WHERE q.user_id = ?
-            ORDER BY q.created_at DESC
+                p.content,
+                p.image,
+                p.created_at,
+                p.updated_at
+            FROM posts p
+            JOIN users u ON p.user_id = u.id
+            WHERE p.user_id = ?
+            ORDER BY p.created_at DESC
             LIMIT ? OFFSET ?
         `, [id, limit, offset]);
 
         res.status(statusCode.success).json({
             code: statusCode.success,
-            message: 'Mengambil data pertanyaan user berhasil.',
-            data: questions,
+            message: 'Mengambil data postingan user berhasil.',
+            data: posts,
             pagination: {
                 total,
                 page,

@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const auth = require("../middlewares/auth.js");
-const bcrypt = require("bcryptjs");
-const { authLimiter, questionLimiter } = require('../middlewares/rateLimiter');
+const { authLimiter, getLimiter } = require('../middlewares/rateLimiter');
 // const upload = require("../middleware/upload.js");
 
 // const version = require('../controllers/versionController.js');
@@ -23,10 +22,10 @@ router.post('/api/user/update', auth.verifyToken, user.updateUser);
 router.post('/api/user/update-password', auth.verifyToken, user.updatePassword);
 router.post('/api/user/delete', auth.verifyToken, user.deleteUser);
 
-const question = require('../controllers/questionController.js');
-router.get('/api/question', questionLimiter, question.getAllQuestions);
-router.get('/api/my-question', auth.verifyToken, question.getUserQuestions);
-router.post('/api/question/create', auth.verifyToken, question.createQuestion);
+const post = require('../controllers/postController.js');
+router.get('/api/post', getLimiter, post.getAllPosts);
+router.get('/api/my-post', auth.verifyToken, post.getUserPosts);
+router.post('/api/post/create', auth.verifyToken, post.createPost);
 
 // const uploadController = require("../controllers/uploadController.js");
 // router.post("/api/upload", auth.verifyToken, upload.single("file"), uploadController.upload);
