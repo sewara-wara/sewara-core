@@ -46,9 +46,9 @@ exports.login = async (req, res, next) => {
             return next(errorResponse('Email dan password wajib diisi', statusCode.bad_request));
         }
     
-        const [users] = await db.query('SELECT * FROM user WHERE email = ?', [email]);
+        const [users] = await db.query('SELECT * FROM user WHERE email = ? AND status = 1', [email]);
         if (users.length === 0) {
-            return next(errorResponse('Email belum terdaftar', statusCode.not_found));
+            return next(errorResponse('Akun tidak ditemukan', statusCode.not_found));
         }
     
         const user = users[0];
