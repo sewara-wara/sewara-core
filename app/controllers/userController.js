@@ -80,3 +80,41 @@ exports.updateUser = async (req, res, next) => {
         next(error);
     }
 };
+
+exports.updatePassword = async (req, res, next) => {
+    try {
+        const id = req.id_user;
+        const { old_password, new_password } = req.body;
+        
+        if (!old_password || !new_password) {
+            return next(errorResponse('Kata sandi lama dan kata sandi baru wajib diisi', statusCode.bad_request));
+        }
+        
+        const [users] = await db.query('SELECT password FROM user WHERE id = ?', [id]);
+        if (users.length === 0) {
+            return next(errorResponse('User tidak ditemukan', statusCode.not_found));
+        }
+
+        const user = users[0];
+
+        
+        const isMatch = await bcrypt.compare(old_password, user.password);
+        if (!isMatch) {
+            return next(errorResponse('Kata sandi lama tidak cocok', statusCode.unauthorized));
+        }
+
+        const hashedNewPassword = await bcrypt.hash(new_password, 10);
+
+        await db.query(
+            'UPDATE user SET password = ?, updated_at = NOW() WHERE id = ?',
+            [hashedNewPassword, id]
+        );
+
+        res.status(statusCode.success).json({
+            code: statusCode.success,
+            message: 'Kata sandi berhasil diperbarui.'
+        });
+    } catch (error) {
+        next(error);
+    }
+};
