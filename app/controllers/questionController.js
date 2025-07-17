@@ -1,4 +1,5 @@
 const db = require('../config/dbConfig.js');
+const statusCode = require('../config/statusCode.js');
 const { errorResponse } = require('../helpers/errorHelper.js');
 
 exports.createQuestion = async (req, res, next) => {
