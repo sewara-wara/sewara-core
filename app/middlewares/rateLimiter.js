@@ -1,6 +1,6 @@
 const rateLimit = require('express-rate-limit');
 
-const questionLimiter = rateLimit({
+const getLimiter = rateLimit({
     windowMs: 1 * 60 * 1000, // 1 menit
     max: 20, // maksimal 20 request per IP per menit
     message: {
@@ -19,6 +19,6 @@ const authLimiter = rateLimit({
 });
 
 module.exports = {
-    questionLimiter,
+    getLimiter,
     authLimiter
 };
