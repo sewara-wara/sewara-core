@@ -145,14 +145,14 @@ exports.updatePost = async (req, res, next) => {
 exports.deletePost = async (req, res, next) => {
     try {
         const idUser = req.id_user;
-        const postId = req.params.id;
+        const postId = req.params.postId;
 
         const [[post]] = await db.query(`
             SELECT * FROM posts WHERE id = ? AND user_id = ? AND status != 2
         `, [postId, idUser]);
 
         if (!post) {
-            return next(errorResponse('Post tidak ditemukan atau sudah dihapus.', statusCode.not_found));
+            return next(errorResponse('Postingan tidak ditemukan atau sudah dihapus.', statusCode.not_found));
         }
 
         await db.query(`
@@ -161,7 +161,7 @@ exports.deletePost = async (req, res, next) => {
 
         res.status(statusCode.success).json({
             code: statusCode.success,
-            message: 'Post berhasil dihapus (soft delete).'
+            message: 'Postingan berhasil dihapus.'
         });
     } catch (error) {
         next(error);
