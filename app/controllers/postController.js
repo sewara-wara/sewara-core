@@ -32,7 +32,7 @@ exports.getAllPosts = async (req, res, next) => {
         const offset = (page - 1) * limit;
 
         const [[{ total }]] = await db.query(`
-            SELECT COUNT(*) AS total FROM posts
+            SELECT COUNT(*) AS total FROM posts WHERE status != 2
         `);
 
         const [posts] = await db.query(`
@@ -76,7 +76,7 @@ exports.getUserPosts = async (req, res, next) => {
         const offset = (page - 1) * limit;
 
         const [[{ total }]] = await db.query(`
-            SELECT COUNT(*) AS total FROM posts WHERE user_id = ?
+            SELECT COUNT(*) AS total FROM posts WHERE user_id = ? AND status != 2
         `, [id]);
 
         const [posts] = await db.query(`
