@@ -114,7 +114,7 @@ exports.getUserPosts = async (req, res, next) => {
 exports.updatePost = async (req, res, next) => {
     try {
         const idUser = req.id_user;
-        const postId = req.params.id;
+        const postId = req.params.postId;
         const { content, image } = req.body;
 
         if (!content) {
@@ -126,7 +126,7 @@ exports.updatePost = async (req, res, next) => {
         `, [postId, idUser]);
 
         if (!post) {
-            return next(errorResponse('Post tidak ditemukan atau bukan milik user.', statusCode.not_found));
+            return next(errorResponse('Postingan tidak ditemukan atau bukan milik user.', statusCode.not_found));
         }
 
         await db.query(`
