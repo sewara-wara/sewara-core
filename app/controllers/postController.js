@@ -32,7 +32,7 @@ exports.getAllPosts = async (req, res, next) => {
         const offset = (page - 1) * limit;
 
         const [[{ total }]] = await db.query(`
-            SELECT COUNT(*) AS total FROM posts WHERE status != 2
+            SELECT COUNT(*) AS total FROM posts WHERE status != 0
         `);
 
         const [posts] = await db.query(`
@@ -46,7 +46,7 @@ exports.getAllPosts = async (req, res, next) => {
                 p.updated_at
             FROM posts p
             JOIN users u ON p.user_id = u.id
-            WHERE p.status != 2
+            WHERE p.status != 0
             ORDER BY p.created_at DESC
             LIMIT ? OFFSET ?
         `, [limit, offset]);
@@ -76,7 +76,7 @@ exports.getUserPosts = async (req, res, next) => {
         const offset = (page - 1) * limit;
 
         const [[{ total }]] = await db.query(`
-            SELECT COUNT(*) AS total FROM posts WHERE user_id = ? AND status != 2
+            SELECT COUNT(*) AS total FROM posts WHERE user_id = ? AND status != 0
         `, [id]);
 
         const [posts] = await db.query(`
@@ -90,7 +90,7 @@ exports.getUserPosts = async (req, res, next) => {
                 p.updated_at
             FROM posts p
             JOIN users u ON p.user_id = u.id
-            WHERE p.user_id = ? AND p.status != 2
+            WHERE p.user_id = ? AND p.status != 0
             ORDER BY p.created_at DESC
             LIMIT ? OFFSET ?
         `, [id, limit, offset]);
@@ -148,7 +148,7 @@ exports.deletePost = async (req, res, next) => {
         const postId = req.params.postId;
 
         const [[post]] = await db.query(`
-            SELECT * FROM posts WHERE id = ? AND user_id = ? AND status != 2
+            SELECT * FROM posts WHERE id = ? AND user_id = ? AND status != 0
         `, [postId, idUser]);
 
         if (!post) {
@@ -156,7 +156,7 @@ exports.deletePost = async (req, res, next) => {
         }
 
         await db.query(`
-            UPDATE posts SET status = 2, updated_at = NOW() WHERE id = ?
+            UPDATE posts SET status = 0, updated_at = NOW() WHERE id = ?
         `, [postId]);
 
         res.status(statusCode.success).json({
