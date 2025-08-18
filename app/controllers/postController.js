@@ -43,7 +43,12 @@ exports.getAllPosts = async (req, res, next) => {
                 p.content,
                 p.image,
                 p.created_at,
-                p.updated_at
+                p.updated_at,
+                (
+                    SELECT COUNT(*) 
+                    FROM comments c 
+                    WHERE c.post_id = p.id AND c.status = 1
+                ) AS comment_count
             FROM posts p
             JOIN users u ON p.user_id = u.id
             WHERE p.status != 0
@@ -87,7 +92,12 @@ exports.getUserPosts = async (req, res, next) => {
                 p.content,
                 p.image,
                 p.created_at,
-                p.updated_at
+                p.updated_at,
+                (
+                    SELECT COUNT(*) 
+                    FROM comments c 
+                    WHERE c.post_id = p.id AND c.status = 1
+                ) AS comment_count
             FROM posts p
             JOIN users u ON p.user_id = u.id
             WHERE p.user_id = ? AND p.status != 0
