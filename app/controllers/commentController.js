@@ -5,7 +5,8 @@ const { errorResponse } = require('../helpers/errorHelper.js');
 exports.createComment = async (req, res, next) => {
     try {
         const idUser = req.id_user;
-        const { postId, content } = req.body;
+        const postId = req.params.postId;
+        const { content } = req.body;
 
         if (!content) {
             return next(errorResponse('Komentar wajib diisi', statusCode.bad_request));
