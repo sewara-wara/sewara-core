@@ -39,7 +39,7 @@ exports.getAllPosts = async (req, res, next) => {
             SELECT 
                 p.id,
                 p.user_id,
-                u.name AS user_name,
+                u.name AS name,
                 p.content,
                 p.image_url,
                 p.created_at,
@@ -88,7 +88,7 @@ exports.getUserPosts = async (req, res, next) => {
             SELECT 
                 p.id,
                 p.user_id,
-                u.name AS user_name,
+                u.name AS name,
                 p.content,
                 p.image_url,
                 p.created_at,
