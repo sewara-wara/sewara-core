@@ -5,16 +5,16 @@ const { errorResponse } = require('../helpers/errorHelper.js');
 exports.createPost = async (req, res, next) => {
     try {
         const id = req.id_user;
-        const { content, image } = req.body;
+        const { content } = req.body;
 
         if (!content) {
             return next(errorResponse('Konten wajib diisi', statusCode.bad_request));
         }
 
         await db.query(`
-            INSERT INTO posts (user_id, content, image)
-            VALUES (?, ?, ?)
-        `, [id, content, image || null]);
+            INSERT INTO posts (user_id, content)
+            VALUES (?, ?)
+        `, [id, content]);
 
         res.status(statusCode.success).json({
             code: statusCode.success,
@@ -41,7 +41,7 @@ exports.getAllPosts = async (req, res, next) => {
                 p.user_id,
                 u.name AS user_name,
                 p.content,
-                p.image,
+                p.image_url,
                 p.created_at,
                 p.updated_at,
                 (
@@ -90,7 +90,7 @@ exports.getUserPosts = async (req, res, next) => {
                 p.user_id,
                 u.name AS user_name,
                 p.content,
-                p.image,
+                p.image_url,
                 p.created_at,
                 p.updated_at,
                 (
@@ -125,7 +125,7 @@ exports.updatePost = async (req, res, next) => {
     try {
         const idUser = req.id_user;
         const postId = req.params.postId;
-        const { content, image } = req.body;
+        const { content } = req.body;
 
         if (!content) {
             return next(errorResponse('Konten wajib diisi', statusCode.bad_request));
@@ -140,8 +140,8 @@ exports.updatePost = async (req, res, next) => {
         }
 
         await db.query(`
-            UPDATE posts SET content = ?, image = ?, updated_at = NOW() WHERE id = ?
-        `, [content, image || post.image, postId]);
+            UPDATE posts SET content = ?, updated_at = NOW() WHERE id = ?
+        `, [content, postId]);
 
         res.status(statusCode.success).json({
             code: statusCode.success,
