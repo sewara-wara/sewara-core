@@ -1,7 +1,7 @@
 {
-  "name": "core-dhuwitku",
+  "name": "core-sewara",
   "version": "1.0.0",
-  "description": "Core DhuwitKu Application",
+  "description": "Core Sewara Application",
   "scripts": {
     "build": "netlify deploy --prod",
     "serve": "netlify functions:serve"
