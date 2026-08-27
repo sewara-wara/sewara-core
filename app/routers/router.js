@@ -9,18 +9,18 @@ const { authLimiter, getLimiter } = require('../middlewares/rateLimiter');
 
 const authController = require('../controllers/authController.js');
 router.post('/login', authLimiter, authController.login);
-router.post('/register', authController.register);
-router.post('/verify-email', authController.verifyEmail);
+// router.post('/register', authController.register);
+// router.post('/verify-email', authController.verifyEmail);
 
-const otpController = require('../controllers/otpController.js');
-router.post('/api/resend-otp', otpController.resendOtp);
+// const otpController = require('../controllers/otpController.js');
+// router.post('/api/resend-otp', otpController.resendOtp);
  
-const user = require('../controllers/userController.js');
-router.get('/user', user.getUser);
-router.get('/user/detail', auth.verifyToken, user.getUserDetail);
-router.post('/user/update', auth.verifyToken, user.updateUser);
-router.post('/user/update-password', auth.verifyToken, user.updatePassword);
-router.delete('/user/delete', auth.verifyToken, user.deleteUser);
+// const user = require('../controllers/userController.js');
+// router.get('/user', user.getUser);
+// router.get('/user/detail', auth.verifyToken, user.getUserDetail);
+// router.post('/user/update', auth.verifyToken, user.updateUser);
+// router.post('/user/update-password', auth.verifyToken, user.updatePassword);
+// router.delete('/user/delete', auth.verifyToken, user.deleteUser);
 
 // const post = require('../controllers/postController.js');
 // router.post('/api/post', auth.verifyToken, post.createPost);
