@@ -6,8 +6,8 @@ const { errorResponse } = require('../helpers/errorHelper.js');
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'manarakubah@gmail.com',
-    pass: 'iphncuqgregsspyf'
+    user: 'sewara.official@gmail.com',
+    pass: 'exioworbzvvncafl'
   }
 });
 
@@ -22,7 +22,7 @@ exports.sendOtp = async (userId, email) => {
         );
     
         const mailOptions = {
-            from: 'Manara',
+            from: 'Sewara',
             to: email,
             subject: 'Verifikasi Email Anda',
             text: `Kode OTP Anda adalah: ${otp}. Kode ini akan kedaluwarsa dalam 15 menit.`

@@ -22,19 +22,19 @@ router.post('/api/user/update', auth.verifyToken, user.updateUser);
 router.post('/api/user/update-password', auth.verifyToken, user.updatePassword);
 router.delete('/api/user/delete', auth.verifyToken, user.deleteUser);
 
-const post = require('../controllers/postController.js');
-router.post('/api/post', auth.verifyToken, post.createPost);
-router.get('/api/post', getLimiter, post.getAllPosts);
-router.get('/api/my-post', getLimiter, auth.verifyToken, post.getUserPosts);
-router.put('/api/post/:postId', auth.verifyToken, post.updatePost);
-router.delete('/api/post/:postId', auth.verifyToken, post.deletePost);
+// const post = require('../controllers/postController.js');
+// router.post('/api/post', auth.verifyToken, post.createPost);
+// router.get('/api/post', getLimiter, post.getAllPosts);
+// router.get('/api/my-post', getLimiter, auth.verifyToken, post.getUserPosts);
+// router.put('/api/post/:postId', auth.verifyToken, post.updatePost);
+// router.delete('/api/post/:postId', auth.verifyToken, post.deletePost);
 
-const comment = require('../controllers/commentController.js');
-router.post('/api/post/:postId/comment', auth.verifyToken, comment.createComment);
-router.get('/api/post/:postId/comment', getLimiter, comment.getCommentsByPost);
-router.get('/api/my-comment', getLimiter, comment.getUserComments);
-router.put('/api/comment/:commentId', auth.verifyToken, comment.updateComment);
-router.delete('/api/comment/:commentId', auth.verifyToken, comment.deleteComment);
+// const comment = require('../controllers/commentController.js');
+// router.post('/api/post/:postId/comment', auth.verifyToken, comment.createComment);
+// router.get('/api/post/:postId/comment', getLimiter, comment.getCommentsByPost);
+// router.get('/api/my-comment', getLimiter, comment.getUserComments);
+// router.put('/api/comment/:commentId', auth.verifyToken, comment.updateComment);
+// router.delete('/api/comment/:commentId', auth.verifyToken, comment.deleteComment);
 
 // const uploadController = require("../controllers/uploadController.js");
 // router.post("/api/upload", auth.verifyToken, upload.single("file"), uploadController.upload);
