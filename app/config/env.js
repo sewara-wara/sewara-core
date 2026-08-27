@@ -1,36 +1,11 @@
+// All values come from environment variables — never hardcode secrets here
 const env = {
-  database: 'defaultdb',
-  username: 'avnadmin',
-  password: 'AVNS_bU44DBSGB_zYvU7KVQ9',
-  port: 13528,
-  host: 'mysql-d9efbcf-sewara-cb59.i.aivencloud.com',
-  caCert: `
------BEGIN CERTIFICATE-----
-MIIERDCCAqygAwIBAgIUaQJJS0UsDQ+vYFgYuM766a1V1YAwDQYJKoZIhvcNAQEM
-BQAwOjE4MDYGA1UEAwwvMTNjM2U2ZDEtYWEyZS00NzZiLWEwMzYtYTQyMmEwMDBj
-NzkzIFByb2plY3QgQ0EwHhcNMjYwODI3MDIyNTE3WhcNMzYwODI0MDIyNTE3WjA6
-MTgwNgYDVQQDDC8xM2MzZTZkMS1hYTJlLTQ3NmItYTAzNi1hNDIyYTAwMGM3OTMg
-UHJvamVjdCBDQTCCAaIwDQYJKoZIhvcNAQEBBQADggGPADCCAYoCggGBALQePFI7
-vWr7h6ku9slwMqJM2j6/dLRSYpb1lcuc6J5XrZjE6x0e1pJht0J/Hc4B18wZE9Et
-HVQ0NN/WmZIHba9arTLsRmqam8GxcBMwGfL7cfCDjwtwxuUxk/VgFc/Nz5NDoc+x
-TRNkidfOD4MU7GGZDwaX1U8BXiZoD59GQpH8pksoI3rMlfcl5/LfqUa8YF2Q2cUX
-xJEkB+BcHjuvP41nNotCqZUMUxNU5k7H2L6mmP+r2sFFwU97H2zG4GxiF72Kwtp+
-D9NFBjsK+6OvjCCd0KSy2bzMZCIQBKBv1folzfCZFR5TM2VA/P11JvRlTdfrMqyu
-qc4kvxIUypdMWr0qIoRkQXYrkmMUBAZmN6r/hX5fC1iOabzYqoW5Kz3Q1+GdJwtY
-M3R1Gy5hd94AujqqvOeZtuuyFkKrNnhxj3rKy6qUfhyQNUfpX5ZBx/iqLClcXmMv
-43gWDcBlt6RwhzU1tSedDQ0Q5L9pBOUATdniW7SWX0EW7zxvVw2ZLDCrMwIDAQAB
-o0IwQDAdBgNVHQ4EFgQUS22i2i/hlUb6Mhqf4czdtTk0p3EwEgYDVR0TAQH/BAgw
-BgEB/wIBADALBgNVHQ8EBAMCAQYwDQYJKoZIhvcNAQEMBQADggGBAKFbyb0z5aDi
-EmJnQ7b72oetXop5oOcQL5XE+N9f4km0kPvzbPRbWt3Z0DUBMzDO3VuPMKDvNgqF
-Z0if5en+J4X/5XDOI7DWc0c7rsV0sit62luhAzBmqZsIrMBR+eGYdz6U9CRovRXA
-4k59R3uldikxZQtX9suDFwas4m7YJ1scVv+HC38yhTRPL0eeaD4GRFRdQDpWDhit
-xo5Z2CeMAkWyJP4s8AxIW+mtLVAO38nU5Zz5vxThaPJnO/ndErKsJLxO1D1zQ2oA
-uOde4AuYxPv+5zshIprqOzlAHBfjqWt6dbv1SPVfBWmFxdl5u7kho3jn+KnhaVYO
-uvgP7466ClnCfAnWfeEt2c48PN02T3qx6hCS7AvDT6BbhINRLETXOyfv8QAJ2kWK
-+TpIrhQuUnKyVdww+7RktU9FnZLbmXkMswu9a/p4Y8JSjwoLEP3glgojAxjStcjw
-nla4g7ABwMz5Qr9GnZoRH8TPsQ5taZ1HYYEgBSB7PuuY2LGhd+j9Ow==
------END CERTIFICATE-----
-`
+  database: process.env.DB_NAME,
+  username: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  port: Number(process.env.DB_PORT),
+  host: process.env.DB_HOST,
+  caCert: process.env.DB_CA_CERT ? process.env.DB_CA_CERT.replace(/\\n/g, '\n') : undefined
 };
 
 module.exports = env;
