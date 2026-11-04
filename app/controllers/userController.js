@@ -11,7 +11,7 @@ exports.getUser = async (req, res, next) => {
         res.status(statusCode.success).json({
             code: statusCode.success,
             message: 'Mengambil data user berhasil.',
-            data: users
+            data: users.map(sanitizeUser)
         });
     } catch (error) {
         next(error);

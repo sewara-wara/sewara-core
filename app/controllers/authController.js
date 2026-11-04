@@ -49,19 +49,21 @@ exports.login = asyncHandler(async (req, res, next) => {
 
     const user = users[0];
 
+    // Check the password first so unauthenticated callers can't trigger OTP emails
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+        return next(errorResponse('Password salah', statusCode.unauthorized));
+    }
+
     if (!user.is_verified) {
         await sendOtp(user.id, email);
-        return res.json({
+        return res.status(statusCode.forbidden).json({
             code: statusCode.forbidden,
             message: 'Akun Anda belum diverifikasi. OTP telah dikirim ulang ke email Anda'
         });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-        return next(errorResponse('Password salah', statusCode.unauthorized));
-    }
-    let token = jwt.sign({ id: user.id }, authConfig.secret, {
+    const token = jwt.sign({ id: user.id }, authConfig.secret, {
         expiresIn: 31536000 // 1 year
     });
     await db.query('UPDATE users SET token = ? WHERE id = ?', [token, user.id]);
@@ -115,6 +117,6 @@ exports.verifyEmail = asyncHandler(async (req, res, next) => {
 
     res.status(statusCode.success).json({ 
         code: statusCode.success,
-        message: 'Email berhasil diverifikasi, silahkah login'
+        message: 'Email berhasil diverifikasi, silakan login'
     });
 });
