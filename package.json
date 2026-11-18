@@ -4,7 +4,8 @@
   "description": "Core Sewara Application",
   "scripts": {
     "build": "netlify deploy --prod",
-    "serve": "netlify functions:serve"
+    "serve": "netlify functions:serve",
+    "migrate": "node scripts/migrate.js"
   },
   "keywords": [
     "nodejs",

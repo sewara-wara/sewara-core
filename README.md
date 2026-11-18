@@ -22,6 +22,7 @@ cp .env.example .env   # then fill in the values
 | `DB_CA_CERT` | CA certificate, with literal `\n` for newlines |
 | `JWT_SECRET` | Secret used to sign JWT tokens |
 | `MAIL_USER`, `MAIL_PASS` | Gmail account + App Password for sending OTP emails |
+| `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` | Cloudinary credentials for listing photos |
 
 On Netlify, set the same variables under **Site configuration → Environment variables**.
 
@@ -34,6 +35,21 @@ npm run build   # deploy to production
 
 All routes are served under `/.netlify/functions/api`.
 
+## Database migrations
+
+The schema lives in [`migrations/`](migrations/) as numbered SQL files, applied in filename order by [`scripts/migrate.js`](scripts/migrate.js) using the DB settings from `.env`.
+
+```bash
+npm run migrate            # apply pending migrations
+npm run migrate -- status  # show applied / pending migrations
+```
+
+Applied files are tracked in the `schema_migrations` table, so each file runs once.
+
+To change the schema, add a new file with the next number (e.g. `003_add_phone_to_users.sql`). Never edit a migration that has already been applied; write a new one instead.
+
+`CREATE TABLE IF NOT EXISTS` skips a table that already exists, even if its columns differ, so run `001` and `002` on an empty database.
+
 ## Structure
 
 ```
@@ -43,4 +59,6 @@ app/controllers/     # Request handlers
 app/middlewares/     # Auth (JWT via x-access-token), rate limiting, error handling
 app/helpers/         # Shared helpers
 app/config/          # DB, env, JWT, and status code config
+migrations/          # SQL schema migrations (run with npm run migrate)
+scripts/             # Maintenance scripts
 ```

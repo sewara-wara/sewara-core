@@ -4,15 +4,24 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const statusCode = require('../config/statusCode.js');
 const { errorResponse } = require('../helpers/errorHelper.js');
-const { sanitizeUser } = require('../helpers/userHelper');
+const { sanitizeUser, USER_ROLES, normalizePhone } = require('../helpers/userHelper');
 const asyncHandler = require('../helpers/asyncHandler.js');
 const { sendOtp } = require('./otpController'); 
 
 exports.register = asyncHandler(async (req, res, next) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, role = 'seeker', phone } = req.body;
 
     if (!name || !email || !password) {
         return next(errorResponse('Semua field wajib diisi', statusCode.bad_request));
+    }
+
+    if (!USER_ROLES.includes(role)) {
+        return next(errorResponse('Role harus seeker atau owner', statusCode.bad_request));
+    }
+
+    const normalizedPhone = phone ? normalizePhone(phone) : null;
+    if (phone && !normalizedPhone) {
+        return next(errorResponse('Nomor HP tidak valid', statusCode.bad_request));
     }
 
     const [existingUser] = await db.query('SELECT id FROM users WHERE email = ?', [email]);
@@ -22,8 +31,8 @@ exports.register = asyncHandler(async (req, res, next) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const [result] = await db.query(
-        'INSERT INTO users (name, email, password, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())',
-        [name, email, hashedPassword]
+        'INSERT INTO users (name, email, phone, password, role, created_at, updated_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW())',
+        [name, email, normalizedPhone, hashedPassword, role]
     );
     const userId = result.insertId;
 

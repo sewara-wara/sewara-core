@@ -22,6 +22,8 @@ Endpoint ini bisa diakses oleh **semua user yang sudah login**, bukan hanya admi
       "id": 12,
       "name": "Budi",
       "email": "budi@example.com",
+      "phone": "6281234567890",
+      "role": "seeker",
       "image_profile": null,
       "is_verified": 1,
       "created_at": "2026-08-27T09:00:00.000Z",
@@ -48,6 +50,8 @@ Mengambil data user yang sedang login. User ditentukan dari token, tidak perlu m
     "id": 12,
     "name": "Budi",
     "email": "budi@example.com",
+    "phone": "6281234567890",
+    "role": "seeker",
     "image_profile": null,
     "is_verified": 1,
     "created_at": "2026-08-27T09:00:00.000Z",
@@ -74,15 +78,17 @@ Mengubah nama dan email user yang sedang login. Kedua field wajib dikirim walaup
 
 **Body**
 
-| Field | Tipe | Wajib |
-| --- | --- | --- |
-| `name` | string | Ya |
-| `email` | string | Ya |
+| Field | Tipe | Wajib | Keterangan |
+| --- | --- | --- | --- |
+| `name` | string | Ya | |
+| `email` | string | Ya | |
+| `phone` | string \| null | Tidak | Nomor WhatsApp, lihat [format nomor HP](README.md#format-nomor-hp). Tidak dikirim = nomor lama tetap. `null` atau `""` = nomor dihapus |
 
 ```json
 {
   "name": "Budi Santoso",
-  "email": "budi@example.com"
+  "email": "budi@example.com",
+  "phone": "081234567890"
 }
 ```
 
@@ -95,6 +101,8 @@ Mengubah nama dan email user yang sedang login. Kedua field wajib dikirim walaup
     "id": 12,
     "name": "Budi Santoso",
     "email": "budi@example.com",
+    "phone": "6281234567890",
+    "role": "seeker",
     "image_profile": null,
     "is_verified": 1,
     "created_at": "2026-08-27T09:00:00.000Z",
@@ -108,6 +116,7 @@ Mengubah nama dan email user yang sedang login. Kedua field wajib dikirim walaup
 | HTTP | Kapan | `message` |
 | --- | --- | --- |
 | 400 | `name` atau `email` kosong | `Nama dan email wajib diisi` |
+| 400 | `phone` bukan nomor HP Indonesia | `Nomor HP tidak valid` |
 | 404 | User tidak ditemukan | `User tidak ditemukan` |
 
 Endpoint ini belum mengecek apakah email baru sudah dipakai user lain, dan tidak meminta verifikasi ulang untuk email baru.
@@ -149,6 +158,99 @@ Mengganti password user yang sedang login.
 | 400 | Ada field yang kosong | `Kata sandi lama dan kata sandi baru wajib diisi` |
 | 404 | User tidak ditemukan | `User tidak ditemukan` |
 | 401 | Password lama salah | `Kata sandi lama tidak cocok` |
+
+---
+
+## `POST /user/update-photo`
+
+✅ Aktif · 🔒 Butuh `x-access-token`
+
+Menyimpan foto profil user yang sedang login. Fotonya harus sudah diupload ke Cloudinary dulu, lihat [alur upload](upload.md#alur-upload-foto-profil).
+
+**Body**
+
+| Field | Tipe | Wajib | Keterangan |
+| --- | --- | --- | --- |
+| `image_profile` | string | Ya | `secure_url` dari Cloudinary, apa adanya |
+
+```json
+{
+  "image_profile": "https://res.cloudinary.com/khaswq4i/image/upload/v1793854028/profiles/user_12.jpg"
+}
+```
+
+**Response 200**
+```json
+{
+  "code": 200,
+  "message": "Foto profil berhasil diperbarui.",
+  "data": {
+    "id": 12,
+    "name": "Budi",
+    "email": "budi@example.com",
+    "phone": "6281234567890",
+    "role": "seeker",
+    "image_profile": "https://res.cloudinary.com/khaswq4i/image/upload/v1793854028/profiles/user_12.jpg",
+    "is_verified": 1,
+    "created_at": "2026-08-27T09:00:00.000Z",
+    "updated_at": "2026-11-05T10:15:00.000Z"
+  }
+}
+```
+
+**Response error**
+
+| HTTP | Kapan | `message` |
+| --- | --- | --- |
+| 400 | `image_profile` kosong | `URL foto wajib diisi` |
+| 400 | URL bukan foto profil milik user ini di akun Cloudinary Sewara | `URL foto tidak valid` |
+| 404 | User tidak ditemukan | `User tidak ditemukan` |
+
+---
+
+## `POST /user/update-role`
+
+✅ Aktif · 🔒 Butuh `x-access-token`
+
+Mengganti tipe user yang sedang login, misalnya dari pencari menjadi pemilik.
+
+**Body**
+
+| Field | Tipe | Wajib | Keterangan |
+| --- | --- | --- | --- |
+| `role` | string | Ya | `seeker` (pencari) atau `owner` (pemilik) |
+
+```json
+{
+  "role": "owner"
+}
+```
+
+**Response 200**
+```json
+{
+  "code": 200,
+  "message": "Tipe user berhasil diperbarui.",
+  "data": {
+    "id": 12,
+    "name": "Budi",
+    "email": "budi@example.com",
+    "phone": "6281234567890",
+    "role": "owner",
+    "image_profile": null,
+    "is_verified": 1,
+    "created_at": "2026-08-27T09:00:00.000Z",
+    "updated_at": "2026-11-05T10:15:00.000Z"
+  }
+}
+```
+
+**Response error**
+
+| HTTP | Kapan | `message` |
+| --- | --- | --- |
+| 400 | `role` kosong atau selain `seeker` / `owner` | `Role harus seeker atau owner` |
+| 404 | User tidak ditemukan | `User tidak ditemukan` |
 
 ---
 

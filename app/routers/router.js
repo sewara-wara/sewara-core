@@ -20,6 +20,8 @@ router.get('/user', getLimiter, auth.verifyToken, user.getUser);
 router.get('/user/detail', auth.verifyToken, user.getUserDetail);
 router.post('/user/update', auth.verifyToken, user.updateUser);
 router.post('/user/update-password', auth.verifyToken, user.updatePassword);
+router.post('/user/update-photo', auth.verifyToken, user.updatePhoto);
+router.post('/user/update-role', auth.verifyToken, user.updateRole);
 router.delete('/user/delete', auth.verifyToken, user.deleteUser);
 
 // const post = require('../controllers/postController.js');
@@ -36,7 +38,7 @@ router.delete('/user/delete', auth.verifyToken, user.deleteUser);
 // router.put('/api/comment/:commentId', auth.verifyToken, comment.updateComment);
 // router.delete('/api/comment/:commentId', auth.verifyToken, comment.deleteComment);
 
-// const uploadController = require("../controllers/uploadController.js");
-// router.post("/api/upload", auth.verifyToken, upload.single("file"), uploadController.upload);
+const uploadController = require('../controllers/uploadController.js');
+router.post('/upload/signature', auth.verifyToken, uploadController.getUploadSignature);
 
 module.exports = router;

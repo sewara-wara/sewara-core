@@ -1,35 +1,18 @@
-const db = require('../config/dbConfig.js');
 const statusCode = require('../config/statusCode.js');
+const { errorResponse } = require('../helpers/errorHelper.js');
+const asyncHandler = require('../helpers/asyncHandler.js');
+const { createProfileUploadParams } = require('../helpers/cloudinaryHelper.js');
 
-const File = db.File;
+exports.getUploadSignature = asyncHandler(async (req, res, next) => {
+    const { type } = req.body;
 
-// exports.upload = async (req, response) => {
-//     try{
-//         console.log(req.file);
+    if (type !== 'profile') {
+        return next(errorResponse('Tipe upload tidak valid', statusCode.bad_request));
+    }
 
-//         if (req.file) {
-//             return response.status(statusCode.success).send({
-//                 code: statusCode.success,
-//                 message: "Successful upload " + req.file.mimetype,
-//                 data: req.file.filename
-//             });
-//         } else {
-//             return response.status(statusCode.empty_data).send({
-//                 code: statusCode.empty_data,
-//                 message: "File tidak ditemukan"
-//             });
-//         }
-//         // File.create({
-//         //     type: req.file.mimetype,
-//         //     name: req.file.filename
-//         //   }).then((image) => {
-            
-//         // });
-//     }catch(error){
-//         response.status(statusCode.internal_server_error).send({
-//             code: statusCode.internal_server_error,
-//             message: "Error : Can not upload a image",
-//             error: error.message
-//         });
-//     }
-// }
+    res.status(statusCode.success).json({
+        code: statusCode.success,
+        message: 'Signature upload berhasil dibuat.',
+        data: createProfileUploadParams(req.id_user)
+    });
+});

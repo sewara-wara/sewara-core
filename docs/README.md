@@ -7,13 +7,14 @@ Dokumentasi endpoint REST API Sewara Core: payload yang dikirim dan bentuk respo
 | Fitur | Dokumen | Isi |
 | --- | --- | --- |
 | Auth | [auth.md](auth.md) | Login, register, verifikasi email, kirim ulang OTP |
-| User | [user.md](user.md) | Profil, ubah data, ganti password, hapus akun |
+| User | [user.md](user.md) | Profil, ubah data, foto profil, tipe user, ganti password, hapus akun |
+| Upload | [upload.md](upload.md) | Signature dan cara upload foto ke Cloudinary |
 
 Baca dulu [Informasi umum](#informasi-umum) di bawah (base URL, header auth, format response, error umum) sebelum masuk ke dokumen per fitur.
 
 ## Status endpoint
 
-Semua endpoint auth dan user sudah aktif di [app/routers/router.js](../app/routers/router.js).
+Semua endpoint auth, user, dan upload sudah aktif di [app/routers/router.js](../app/routers/router.js).
 
 | Method | Endpoint | Auth | Status |
 | --- | --- | --- | --- |
@@ -25,9 +26,12 @@ Semua endpoint auth dan user sudah aktif di [app/routers/router.js](../app/route
 | GET | [`/user/detail`](user.md#get-userdetail) | Ya | ✅ Aktif |
 | POST | [`/user/update`](user.md#post-userupdate) | Ya | ✅ Aktif |
 | POST | [`/user/update-password`](user.md#post-userupdate-password) | Ya | ✅ Aktif |
+| POST | [`/user/update-photo`](user.md#post-userupdate-photo) | Ya | ✅ Aktif |
+| POST | [`/user/update-role`](user.md#post-userupdate-role) | Ya | ✅ Aktif |
 | DELETE | [`/user/delete`](user.md#delete-userdelete) | Ya | ✅ Aktif |
+| POST | [`/upload/signature`](upload.md#post-uploadsignature) | Ya | ✅ Aktif |
 
-Route untuk post, comment, dan upload masih dikomentari di router. Controller post dan comment sudah dihapus dari repo (bisa dikembalikan dari git history), jadi belum didokumentasikan di sini.
+Route untuk post dan comment masih dikomentari di router. Controller post dan comment sudah dihapus dari repo (bisa dikembalikan dari git history), jadi belum didokumentasikan di sini.
 
 ---
 
@@ -106,7 +110,22 @@ Data user yang dikembalikan API selalu dalam bentuk ini. Password dan token tida
 | `id` | number | ID user |
 | `name` | string | Nama |
 | `email` | string | Email |
-| `image_profile` | string \| null | Foto profil |
+| `phone` | string \| null | Nomor WhatsApp dalam format `628xxx`, lihat [format nomor HP](#format-nomor-hp) |
+| `role` | string | `seeker` (pencari) atau `owner` (pemilik) |
+| `image_profile` | string \| null | URL foto profil |
 | `is_verified` | number | `1` = email sudah diverifikasi, `0` = belum |
 | `created_at` | string (ISO 8601) | Waktu dibuat |
 | `updated_at` | string (ISO 8601) | Waktu terakhir diubah |
+
+### Format nomor HP
+
+Field `phone` menerima nomor HP Indonesia dalam beberapa bentuk. Spasi, tanda `-`, titik, dan kurung boleh ada.
+
+| Dikirim | Disimpan |
+| --- | --- |
+| `081234567890` | `6281234567890` |
+| `+62 812-3456-7890` | `6281234567890` |
+| `6281234567890` | `6281234567890` |
+
+API selalu mengembalikan format `628xxx`, jadi bisa langsung dipakai untuk link WhatsApp: `https://wa.me/6281234567890`. Nomor telepon rumah (misalnya `021...`) dan nomor yang terlalu pendek atau terlalu panjang ditolak.
+

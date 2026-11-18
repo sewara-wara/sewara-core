@@ -33,6 +33,8 @@ Login dengan email dan password. Kalau berhasil, response berisi data user dan t
     "id": 12,
     "name": "Budi",
     "email": "budi@example.com",
+    "phone": "6281234567890",
+    "role": "seeker",
     "image_profile": null,
     "is_verified": 1,
     "created_at": "2026-08-27T09:00:00.000Z",
@@ -72,12 +74,16 @@ Mendaftarkan akun baru. Setelah berhasil, kode OTP 6 digit dikirim ke email user
 | `name` | string | Ya |
 | `email` | string | Ya |
 | `password` | string | Ya |
+| `role` | string | Tidak. `seeker` (pencari) atau `owner` (pemilik). Default `seeker` |
+| `phone` | string | Tidak. Nomor WhatsApp, lihat [format nomor HP](README.md#format-nomor-hp) |
 
 ```json
 {
   "name": "Budi",
   "email": "budi@example.com",
-  "password": "rahasia123"
+  "password": "rahasia123",
+  "role": "owner",
+  "phone": "0812-3456-7890"
 }
 ```
 
@@ -94,6 +100,8 @@ Mendaftarkan akun baru. Setelah berhasil, kode OTP 6 digit dikirim ke email user
 | HTTP | Kapan | `message` |
 | --- | --- | --- |
 | 400 | Ada field yang kosong | `Semua field wajib diisi` |
+| 400 | `role` selain `seeker` atau `owner` | `Role harus seeker atau owner` |
+| 400 | `phone` bukan nomor HP Indonesia | `Nomor HP tidak valid` |
 | 409 | Email sudah terdaftar | `Email sudah terdaftar` |
 | 500 | Gagal mengirim email OTP | `Gagal mengirim OTP` |
 
