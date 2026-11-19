@@ -9,18 +9,20 @@ const { authLimiter, getLimiter } = require('../middlewares/rateLimiter');
 
 const authController = require('../controllers/authController.js');
 router.post('/login', authLimiter, authController.login);
-// router.post('/register', authController.register);
-// router.post('/verify-email', authController.verifyEmail);
+router.post('/register', authController.register);
+router.post('/verify-email', authController.verifyEmail);
 
-// const otpController = require('../controllers/otpController.js');
-// router.post('/api/resend-otp', otpController.resendOtp);
- 
-// const user = require('../controllers/userController.js');
-// router.get('/user', user.getUser);
-// router.get('/user/detail', auth.verifyToken, user.getUserDetail);
-// router.post('/user/update', auth.verifyToken, user.updateUser);
-// router.post('/user/update-password', auth.verifyToken, user.updatePassword);
-// router.delete('/user/delete', auth.verifyToken, user.deleteUser);
+const otpController = require('../controllers/otpController.js');
+router.post('/resend-otp', otpController.resendOtp);
+
+const user = require('../controllers/userController.js');
+router.get('/user', getLimiter, auth.verifyToken, user.getUser);
+router.get('/user/detail', auth.verifyToken, user.getUserDetail);
+router.post('/user/update', auth.verifyToken, user.updateUser);
+router.post('/user/update-password', auth.verifyToken, user.updatePassword);
+router.post('/user/update-photo', auth.verifyToken, user.updatePhoto);
+router.post('/user/update-role', auth.verifyToken, user.updateRole);
+router.delete('/user/delete', auth.verifyToken, user.deleteUser);
 
 // const post = require('../controllers/postController.js');
 // router.post('/api/post', auth.verifyToken, post.createPost);
@@ -36,7 +38,7 @@ router.post('/login', authLimiter, authController.login);
 // router.put('/api/comment/:commentId', auth.verifyToken, comment.updateComment);
 // router.delete('/api/comment/:commentId', auth.verifyToken, comment.deleteComment);
 
-// const uploadController = require("../controllers/uploadController.js");
-// router.post("/api/upload", auth.verifyToken, upload.single("file"), uploadController.upload);
+const uploadController = require('../controllers/uploadController.js');
+router.post('/upload/signature', auth.verifyToken, uploadController.getUploadSignature);
 
 module.exports = router;

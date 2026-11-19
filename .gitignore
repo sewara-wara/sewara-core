@@ -1,7 +1,11 @@
 node_modules/
 dist/
 .netlify/
+
+# macOS
 .DS_Store
+**/.DS_Store
+._*
 
 # Environment variables (never commit real secrets)
 .env
