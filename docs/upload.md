@@ -35,7 +35,7 @@ Membuat signature untuk satu kali proses upload. Foto profil setiap user punya l
   "code": 200,
   "message": "Signature upload berhasil dibuat.",
   "data": {
-    "upload_url": "https://api.cloudinary.com/v1_1/khaswq4i/image/upload",
+    "upload_url": "https://api.cloudinary.com/v1_1/<cloud_name>/image/upload",
     "fields": {
       "allowed_formats": "jpg,jpeg,png,webp",
       "invalidate": "true",
@@ -43,7 +43,7 @@ Membuat signature untuk satu kali proses upload. Foto profil setiap user punya l
       "public_id": "profiles/user_12",
       "timestamp": 1793854028,
       "transformation": "c_limit,w_800",
-      "api_key": "617827394277659",
+      "api_key": "<api_key>",
       "signature": "60fa903c44d8d878d46b38041b5e905ddc8fc2f0"
     }
   }
@@ -62,7 +62,7 @@ Membuat signature untuk satu kali proses upload. Foto profil setiap user punya l
 Kirim request `multipart/form-data` ke `upload_url`. Sertakan **semua** isi `fields` tanpa diubah, ditambah field `file` berisi fotonya.
 
 ```bash
-curl -X POST "https://api.cloudinary.com/v1_1/khaswq4i/image/upload" \
+curl -X POST "https://api.cloudinary.com/v1_1/<cloud_name>/image/upload" \
   -F "file=@foto.jpg" \
   -F "allowed_formats=jpg,jpeg,png,webp" \
   -F "invalidate=true" \
@@ -70,7 +70,7 @@ curl -X POST "https://api.cloudinary.com/v1_1/khaswq4i/image/upload" \
   -F "public_id=profiles/user_12" \
   -F "timestamp=1793854028" \
   -F "transformation=c_limit,w_800" \
-  -F "api_key=617827394277659" \
+  -F "api_key=<api_key>" \
   -F "signature=60fa903c44d8d878d46b38041b5e905ddc8fc2f0"
 ```
 
@@ -79,7 +79,7 @@ Ambil `secure_url` dari response Cloudinary:
 ```json
 {
   "public_id": "profiles/user_12",
-  "secure_url": "https://res.cloudinary.com/khaswq4i/image/upload/v1793854028/profiles/user_12.jpg"
+  "secure_url": "https://res.cloudinary.com/<cloud_name>/image/upload/v1793854028/profiles/user_12.jpg"
 }
 ```
 
@@ -92,7 +92,7 @@ Ambil `secure_url` dari response Cloudinary:
 Sisipkan ukuran setelah `/upload/`. Contoh foto profil kotak 200 px yang fokus ke wajah:
 
 ```
-https://res.cloudinary.com/khaswq4i/image/upload/w_200,h_200,c_fill,g_face,q_auto,f_auto/v1793854028/profiles/user_12.jpg
+https://res.cloudinary.com/<cloud_name>/image/upload/w_200,h_200,c_fill,g_face,q_auto,f_auto/v1793854028/profiles/user_12.jpg
 ```
 
 URL dengan ukuran seperti ini hanya untuk ditampilkan. Yang dikirim ke `/user/update-photo` harus `secure_url` apa adanya.

@@ -175,7 +175,7 @@ Menyimpan foto profil user yang sedang login. Fotonya harus sudah diupload ke Cl
 
 ```json
 {
-  "image_profile": "https://res.cloudinary.com/khaswq4i/image/upload/v1793854028/profiles/user_12.jpg"
+  "image_profile": "https://res.cloudinary.com/<cloud_name>/image/upload/v1793854028/profiles/user_12.jpg"
 }
 ```
 
@@ -190,7 +190,7 @@ Menyimpan foto profil user yang sedang login. Fotonya harus sudah diupload ke Cl
     "email": "budi@example.com",
     "phone": "6281234567890",
     "role": "seeker",
-    "image_profile": "https://res.cloudinary.com/khaswq4i/image/upload/v1793854028/profiles/user_12.jpg",
+    "image_profile": "https://res.cloudinary.com/<cloud_name>/image/upload/v1793854028/profiles/user_12.jpg",
     "is_verified": 1,
     "created_at": "2026-08-27T09:00:00.000Z",
     "updated_at": "2026-11-05T10:15:00.000Z"
